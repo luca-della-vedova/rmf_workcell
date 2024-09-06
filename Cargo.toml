@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    # "rmf_workcell_editor",
+    "rmf_workcell_editor",
     "rmf_workcell_format",
 ]
 
