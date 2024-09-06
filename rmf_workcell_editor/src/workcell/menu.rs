@@ -15,7 +15,7 @@
  *
 */
 
-use crate::menu_bar::{FileMenu, MenuEvent, MenuItem, MenuVisualizationStates};
+use librmf_site_editor::widgets::menu_bar::{FileMenu, MenuEvent, MenuItem, MenuVisualizationStates};
 use crate::{AppState, ExportFormat, SaveWorkspace, SaveWorkspaceDestination};
 use bevy::prelude::*;
 use std::collections::HashSet;
@@ -34,7 +34,7 @@ impl FromWorld for ExportUrdfMenu {
         let export_urdf = world
             .spawn((
                 MenuItem::Text("Export Urdf".to_string()),
-                MenuVisualizationStates(workcell_states),
+                //MenuVisualizationStates(workcell_states),
             ))
             .set_parent(file_header)
             .id();

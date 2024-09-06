@@ -15,9 +15,9 @@
  *
 */
 
-use crate::interaction::AnchorVisualization;
+use librmf_site_editor::interaction::AnchorVisualization;
 use bevy::prelude::*;
-use rmf_site_format::FrameMarker;
+use rmf_workcell_format::FrameMarker;
 
 // TODO(luca) We should probably have a different mesh altogether for workcell anchors, rather than
 // a scaled down version of site anchors.

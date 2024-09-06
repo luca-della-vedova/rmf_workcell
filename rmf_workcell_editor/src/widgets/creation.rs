@@ -15,19 +15,21 @@
  *
 */
 
-use crate::{
+use librmf_site_editor::{
     inspector::{InspectAssetSourceComponent, InspectScaleComponent},
-    interaction::{AnchorSelection, ObjectPlacement, PlaceableObject, Selection},
+    interaction::{AnchorSelection, ObjectPlacement, Selection},
     site::{
-        AssetSource, CurrentLevel, DefaultFile, DrawingBundle, Recall, RecallAssetSource, Scale,
+        AssetSource, DefaultFile, Recall, RecallAssetSource, Scale,
     },
     widgets::{prelude::*, AssetGalleryStatus},
-    AppState, CurrentWorkspace,
+    CurrentWorkspace,
 };
+use crate::interaction::PlaceableObject;
+use crate::AppState;
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{CollapsingHeader, Ui};
 
-use rmf_site_format::{DrawingProperties, Model};
+use rmf_workcell_format::Model;
 
 /// This widget provides a widget with buttons for creating new site elements.
 #[derive(Default)]
@@ -35,7 +37,7 @@ pub struct CreationPlugin {}
 
 impl Plugin for CreationPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<PendingDrawing>()
+        app
             .init_resource::<PendingModel>()
             .add_plugins(PropertiesTilePlugin::<Creation>::new());
     }
@@ -46,8 +48,6 @@ struct Creation<'w, 's> {
     default_file: Query<'w, 's, &'static DefaultFile>,
     app_state: Res<'w, State<AppState>>,
     current_workspace: Res<'w, CurrentWorkspace>,
-    current_level: Res<'w, CurrentLevel>,
-    pending_drawings: ResMut<'w, PendingDrawing>,
     pending_model: ResMut<'w, PendingModel>,
     asset_gallery: Option<ResMut<'w, AssetGalleryStatus>>,
     commands: Commands<'w, 's>,
@@ -60,8 +60,8 @@ impl<'w, 's> WidgetSystem<Tile> for Creation<'w, 's> {
     fn show(_: Tile, ui: &mut Ui, state: &mut SystemState<Self>, world: &mut World) -> () {
         let mut params = state.get_mut(world);
         match params.app_state.get() {
-            AppState::SiteEditor | AppState::SiteDrawingEditor | AppState::WorkcellEditor => {}
-            AppState::MainMenu | AppState::SiteVisualizer => return,
+            AppState::WorkcellEditor => {}
+            AppState::MainMenu => return,
         }
         CollapsingHeader::new("Create")
             .default_open(true)
@@ -75,74 +75,8 @@ impl<'w, 's> Creation<'w, 's> {
     pub fn show_widget(&mut self, ui: &mut Ui) {
         ui.vertical(|ui| {
             match self.app_state.get() {
-                AppState::MainMenu | AppState::SiteVisualizer => {
+                AppState::MainMenu => {
                     return;
-                }
-                AppState::SiteEditor => {
-                    if ui.button("Lane").clicked() {
-                        self.anchor_selection.create_lanes();
-                    }
-
-                    if ui.button("Location").clicked() {
-                        self.anchor_selection.create_location();
-                    }
-
-                    if ui.button("Wall").clicked() {
-                        self.anchor_selection.create_walls();
-                    }
-
-                    if ui.button("Door").clicked() {
-                        self.anchor_selection.create_door();
-                    }
-
-                    if ui.button("Lift").clicked() {
-                        self.anchor_selection.create_lift();
-                    }
-
-                    if ui.button("Floor").clicked() {
-                        self.anchor_selection.create_floor();
-                    }
-                    if ui.button("Fiducial").clicked() {
-                        self.anchor_selection.create_site_fiducial();
-                    }
-
-                    ui.add_space(10.0);
-                    CollapsingHeader::new("New drawing")
-                        .default_open(false)
-                        .show(ui, |ui| {
-                            let default_file = self
-                                .current_workspace
-                                .root
-                                .map(|e| self.default_file.get(e).ok())
-                                .flatten();
-                            if let Some(new_asset_source) = InspectAssetSourceComponent::new(
-                                &self.pending_drawings.source,
-                                &self.pending_drawings.recall_source,
-                                default_file,
-                            )
-                            .show(ui)
-                            {
-                                self.pending_drawings
-                                    .recall_source
-                                    .remember(&new_asset_source);
-                                self.pending_drawings.source = new_asset_source;
-                            }
-                            ui.add_space(5.0);
-                            if ui.button("Add Drawing").clicked() {
-                                self.commands.spawn(DrawingBundle::new(DrawingProperties {
-                                    source: self.pending_drawings.source.clone(),
-                                    ..default()
-                                }));
-                            }
-                        });
-                }
-                AppState::SiteDrawingEditor => {
-                    if ui.button("Fiducial").clicked() {
-                        self.anchor_selection.create_drawing_fiducial();
-                    }
-                    if ui.button("Measurement").clicked() {
-                        self.anchor_selection.create_measurements();
-                    }
                 }
                 AppState::WorkcellEditor => {
                     if ui.button("Frame").clicked() {
@@ -151,8 +85,8 @@ impl<'w, 's> Creation<'w, 's> {
                 }
             }
             match self.app_state.get() {
-                AppState::MainMenu | AppState::SiteDrawingEditor | AppState::SiteVisualizer => {}
-                AppState::SiteEditor | AppState::WorkcellEditor => {
+                AppState::MainMenu => {}
+                AppState::WorkcellEditor => {
                     ui.add_space(10.0);
                     CollapsingHeader::new("New model")
                         .default_open(false)
@@ -181,22 +115,7 @@ impl<'w, 's> Creation<'w, 's> {
                             ui.add_space(5.0);
                             if let Some(asset_gallery) = &mut self.asset_gallery {
                                 match self.app_state.get() {
-                                    AppState::MainMenu
-                                    | AppState::SiteDrawingEditor
-                                    | AppState::SiteVisualizer => {}
-                                    AppState::SiteEditor => {
-                                        if ui.button("Browse fuel").clicked() {
-                                            asset_gallery.show = true;
-                                        }
-                                        if ui.button("Spawn model").clicked() {
-                                            let model = Model {
-                                                source: self.pending_model.source.clone(),
-                                                scale: self.pending_model.scale,
-                                                ..default()
-                                            };
-                                            self.spawn_model_2d(model);
-                                        }
-                                    }
+                                    AppState::MainMenu => {}
                                     AppState::WorkcellEditor => {
                                         if ui.button("Browse fuel").clicked() {
                                             asset_gallery.show = true;
@@ -237,20 +156,6 @@ impl<'w, 's> Creation<'w, 's> {
             warn!("Unable to create [{object:?}] outside of a workspace");
         }
     }
-
-    pub fn spawn_model_2d(&mut self, object: Model) {
-        if let Some(level) = self.current_level.0 {
-            self.object_placement.place_object_2d(object, level);
-        } else {
-            warn!("Unable to create [{object:?}] outside of a level");
-        }
-    }
-}
-
-#[derive(Resource, Clone, Default)]
-struct PendingDrawing {
-    pub source: AssetSource,
-    pub recall_source: RecallAssetSource,
 }
 
 #[derive(Resource, Clone, Default)]

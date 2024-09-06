@@ -15,73 +15,15 @@
  *
 */
 
-use crate::site::{
-    update_anchor_transforms, CollisionMeshMarker, ConstraintMarker, DoorMarker, FiducialMarker,
-    FloorMarker, LaneMarker, LiftCabin, LiftCabinDoorMarker, LocationTags, MeasurementMarker,
-    SiteUpdateSet, VisualMeshMarker, WallMarker,
+use librmf_site_editor::site::{
+    update_anchor_transforms, CollisionMeshMarker,
+    SiteUpdateSet, VisualMeshMarker, 
 };
-// TODO(luca) restore
-// use crate::workcell::WorkcellVisualizationMarker;
+use crate::workcell::WorkcellVisualizationMarker;
 
-pub mod anchor;
-pub use anchor::*;
-
-pub mod assets;
-pub use assets::*;
-
-pub mod camera_controls;
-pub use camera_controls::*;
-
-pub mod category_visibility;
-pub use category_visibility::*;
-
-pub mod cursor;
-pub use cursor::*;
-
-pub mod edge;
-pub use edge::*;
-
-pub mod gizmo;
-pub use gizmo::*;
-
-pub mod highlight;
-pub use highlight::*;
-
-pub mod lane;
-pub use lane::*;
-
-pub mod lift;
-pub use lift::*;
-
-pub mod light;
-pub use light::*;
-
-pub mod model_preview;
-pub use model_preview::*;
-
-pub mod outline;
-pub use outline::*;
-
-pub mod path;
-pub use path::*;
-
-pub mod picking;
-pub use picking::*;
-
-pub mod point;
-pub use point::*;
-
-pub mod popup;
-pub use popup::*;
-
-pub mod preview;
-pub use preview::*;
-
+/*
 pub mod select;
 pub use select::*;
-
-pub mod visual_cue;
-pub use visual_cue::*;
 
 use bevy::prelude::*;
 use bevy_mod_outline::OutlinePlugin;
@@ -92,39 +34,7 @@ use bevy_polyline::PolylinePlugin;
 pub struct SiteRaycastSet;
 
 #[derive(Default)]
-pub struct InteractionPlugin {
-    headless: bool,
-}
-
-impl InteractionPlugin {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn headless(mut self, is_headless: bool) -> Self {
-        self.headless = is_headless;
-        self
-    }
-}
-
-#[derive(Debug, Clone, Copy, Default, Hash, PartialEq, Eq, States)]
-pub enum InteractionState {
-    Enable,
-    #[default]
-    Disable,
-}
-
-#[derive(Debug, Hash, PartialEq, Eq, Clone, SystemSet)]
-pub enum InteractionUpdateSet {
-    /// Since parentage can have an effect on visuals, we should wait to add
-    /// the visuals until after any orphans have been assigned.
-    AddVisuals,
-    /// Force a command flush between the two sets
-    CommandFlush,
-    /// This set happens after the AddVisuals set has flushed
-    ProcessVisuals,
-    // TODO(luca) should we have a command flush after process visuals?
-}
+pub struct InteractionPlugin { }
 
 impl Plugin for InteractionPlugin {
     fn build(&self, app: &mut App) {
@@ -159,23 +69,12 @@ impl Plugin for InteractionPlugin {
             .add_event::<SpawnPreview>()
             .add_plugins((
                 OutlinePlugin,
-                CategoryVisibilityPlugin::<DoorMarker>::visible(true),
-                CategoryVisibilityPlugin::<FloorMarker>::visible(true),
-                CategoryVisibilityPlugin::<LaneMarker>::visible(true),
-                CategoryVisibilityPlugin::<LiftCabin<Entity>>::visible(true),
-                CategoryVisibilityPlugin::<LiftCabinDoorMarker>::visible(true),
-                CategoryVisibilityPlugin::<LocationTags>::visible(true),
-                CategoryVisibilityPlugin::<FiducialMarker>::visible(true),
-                CategoryVisibilityPlugin::<ConstraintMarker>::visible(true),
                 CategoryVisibilityPlugin::<VisualMeshMarker>::visible(true),
                 CategoryVisibilityPlugin::<CollisionMeshMarker>::visible(false),
-                CategoryVisibilityPlugin::<MeasurementMarker>::visible(true),
-                CategoryVisibilityPlugin::<WallMarker>::visible(true),
-                // CategoryVisibilityPlugin::<WorkcellVisualizationMarker>::visible(true),
+                CategoryVisibilityPlugin::<WorkcellVisualizationMarker>::visible(true),
             ))
             .add_plugins((CameraControlsPlugin, ModelPreviewPlugin));
 
-        if !self.headless {
             app.add_plugins(SelectionPlugin::default())
                 .add_systems(
                     Update,
@@ -253,7 +152,6 @@ impl Plugin for InteractionPlugin {
                         .run_if(in_state(InteractionState::Enable)),
                 )
                 .add_systems(First, update_picked);
-        }
     }
 }
 
@@ -271,13 +169,4 @@ pub fn set_visibility(entity: Entity, q_visibility: &mut Query<&mut Visibility>,
         }
     }
 }
-
-fn set_material(
-    entity: Entity,
-    to_material: &Handle<StandardMaterial>,
-    q_materials: &mut Query<&mut Handle<StandardMaterial>>,
-) {
-    if let Some(mut m) = q_materials.get_mut(entity).ok() {
-        *m = to_material.clone();
-    }
-}
+*/

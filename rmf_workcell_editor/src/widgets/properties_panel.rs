@@ -32,15 +32,8 @@ impl Plugin for StandardPropertiesPanelPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             PropertiesPanelPlugin::new(PanelSide::Right),
-            ViewLevelsPlugin::default(),
-            ViewNavGraphsPlugin::default(),
-            ViewLayersPlugin::default(),
             StandardInspectorPlugin::default(),
             CreationPlugin::default(),
-            ViewGroupsPlugin::default(),
-            ViewLightsPlugin::default(),
-            ViewOccupancyPlugin::default(),
-            BuildingPreviewPlugin::default(),
         ));
     }
 }
