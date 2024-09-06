@@ -16,7 +16,7 @@
 */
 
 use crate::{
-    interaction::{ModelPreviewCamera, ObjectPlacement, PlaceableObject, Selection},
+    interaction::{ObjectPlacement, PlaceableObject, Selection},
     site::{
         AssetSource, CurrentLevel, FuelClient, Model, ModelSpawningExt, SetFuelApiKey,
         UpdateFuelCache,
@@ -24,6 +24,7 @@ use crate::{
     widgets::prelude::*,
     AppState, CurrentWorkspace,
 };
+use librmf_site_editor::interaction::ModelPreviewCamera;
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{self, Button, ComboBox, ImageSource, RichText, ScrollArea, Ui, Window};
 use gz_fuel::FuelModel;
@@ -286,15 +287,10 @@ impl<'w, 's> FuelAssetBrowser<'w, 's> {
                         };
 
                         match self.app_state.get() {
-                            AppState::SiteEditor => {
-                                if let Some(level) = self.current_level.0 {
-                                    self.place_object.place_object_2d(model, level);
-                                } else {
-                                    warn!("Cannot spawn a model outside of a workspace");
-                                }
-                            }
                             AppState::WorkcellEditor => {
                                 if let Some(workspace) = self.current_workspace.root {
+                                    // TODO(luca) we wouldn't need this file at all if not for
+                                    // this workflow, make it configurable?
                                     self.place_object.place_object_3d(
                                         PlaceableObject::Model(model),
                                         self.current_selection.0,
@@ -304,8 +300,8 @@ impl<'w, 's> FuelAssetBrowser<'w, 's> {
                                     warn!("Cannot spawn a model outside of a workspace");
                                 }
                             }
-                            _ => {
-                                warn!("Invalid mode for spawning a model: {:?}", &self.app_state);
+                            AppState::MainMenu => {
+                                warn!("Tried to spawn model while in main menu, ignoring");
                             }
                         }
                     }

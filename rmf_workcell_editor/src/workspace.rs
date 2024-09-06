@@ -20,12 +20,11 @@ use bevy_impulse::*;
 use rfd::AsyncFileDialog;
 use std::path::PathBuf;
 
-use crate::interaction::InteractionState;
-use crate::site::{DefaultFile, LoadSite, SaveSite};
+use librmf_site_editor::interaction::InteractionState;
+use librmf_site_editor::site::DefaultFile;
 use crate::workcell::{LoadWorkcell, SaveWorkcell};
 use crate::AppState;
-use rmf_site_format::legacy::building_map::BuildingMap;
-use rmf_site_format::{NameOfSite, Site, Workcell};
+use rmf_workcell_format::Workcell;
 
 use crossbeam_channel::{Receiver, Sender};
 
@@ -47,24 +46,14 @@ pub struct WorkspaceMarker;
 
 #[derive(Clone)]
 pub enum WorkspaceData {
-    LegacyBuilding(Vec<u8>),
-    RonSite(Vec<u8>),
-    JsonSite(Vec<u8>),
     Workcell(Vec<u8>),
     WorkcellUrdf(Vec<u8>),
-    LoadSite(LoadSite),
 }
 
 impl WorkspaceData {
     pub fn new(path: &PathBuf, data: Vec<u8>) -> Option<Self> {
         let filename = path.file_name().and_then(|f| f.to_str())?;
-        if filename.ends_with(".building.yaml") {
-            Some(WorkspaceData::LegacyBuilding(data))
-        } else if filename.ends_with("site.ron") {
-            Some(WorkspaceData::RonSite(data))
-        } else if filename.ends_with("site.json") {
-            Some(WorkspaceData::JsonSite(data))
-        } else if filename.ends_with("workcell.json") {
+        if filename.ends_with("workcell.json") {
             Some(WorkspaceData::Workcell(data))
         } else if filename.ends_with("urdf") {
             Some(WorkspaceData::WorkcellUrdf(data))
@@ -121,11 +110,6 @@ impl SaveWorkspace {
         self.format = ExportFormat::Urdf;
         self
     }
-
-    pub fn to_sdf(mut self) -> Self {
-        self.format = ExportFormat::Sdf;
-        self
-    }
 }
 
 #[derive(Default, Debug, Clone)]
@@ -141,7 +125,6 @@ pub enum ExportFormat {
     #[default]
     Default,
     Urdf,
-    Sdf,
 }
 
 /// Event used in channels to communicate the file handle that was chosen by the user.
@@ -170,13 +153,6 @@ impl Default for SaveWorkspaceChannels {
 /// Used to keep track of visibility when switching workspace
 #[derive(Debug, Default, Resource)]
 pub struct RecallWorkspace(Option<Entity>);
-
-impl CurrentWorkspace {
-    pub fn to_site(self, open_sites: &Query<Entity, With<NameOfSite>>) -> Option<Entity> {
-        let site_entity = self.root?;
-        open_sites.get(site_entity).ok()
-    }
-}
 
 pub struct WorkspacePlugin;
 
@@ -207,20 +183,12 @@ impl Plugin for WorkspacePlugin {
 pub fn dispatch_new_workspace_events(
     state: Res<State<AppState>>,
     mut new_workspace: EventReader<CreateNewWorkspace>,
-    mut load_site: EventWriter<LoadSite>,
     mut load_workcell: EventWriter<LoadWorkcell>,
 ) {
     if let Some(_cmd) = new_workspace.read().last() {
         match state.get() {
             AppState::MainMenu => {
                 error!("Sent generic new workspace while in main menu");
-            }
-            AppState::SiteEditor | AppState::SiteDrawingEditor | AppState::SiteVisualizer => {
-                load_site.send(LoadSite {
-                    site: Site::blank_L1("new".to_owned()),
-                    focus: true,
-                    default_file: None,
-                });
             }
             AppState::WorkcellEditor => {
                 load_workcell.send(LoadWorkcell {
@@ -238,72 +206,10 @@ pub fn process_load_workspace_files(
     In(BlockingService { request, .. }): BlockingServiceInput<LoadWorkspaceFile>,
     mut app_state: ResMut<NextState<AppState>>,
     mut interaction_state: ResMut<NextState<InteractionState>>,
-    mut load_site: EventWriter<LoadSite>,
     mut load_workcell: EventWriter<LoadWorkcell>,
 ) {
     let LoadWorkspaceFile(default_file, data) = request;
     match data {
-        WorkspaceData::LegacyBuilding(data) => {
-            info!("Opening legacy building map file");
-            match BuildingMap::from_bytes(&data) {
-                Ok(building) => {
-                    match building.to_site() {
-                        Ok(site) => {
-                            // Switch state
-                            app_state.set(AppState::SiteEditor);
-                            load_site.send(LoadSite {
-                                site,
-                                focus: true,
-                                default_file,
-                            });
-                            interaction_state.set(InteractionState::Enable);
-                        }
-                        Err(err) => {
-                            error!("Failed converting to site {:?}", err);
-                        }
-                    }
-                }
-                Err(err) => {
-                    error!("Failed loading legacy building {:?}", err);
-                }
-            }
-        }
-        WorkspaceData::RonSite(data) => {
-            info!("Opening site file");
-            match Site::from_bytes_ron(&data) {
-                Ok(site) => {
-                    // Switch state
-                    app_state.set(AppState::SiteEditor);
-                    load_site.send(LoadSite {
-                        site,
-                        focus: true,
-                        default_file,
-                    });
-                    interaction_state.set(InteractionState::Enable);
-                }
-                Err(err) => {
-                    error!("Failed loading site {:?}", err);
-                }
-            }
-        }
-        WorkspaceData::JsonSite(data) => {
-            info!("Opening site file");
-            match Site::from_bytes_json(&data) {
-                Ok(site) => {
-                    // Switch state
-                    app_state.set(AppState::SiteEditor);
-                    load_site.send(LoadSite {
-                        site,
-                        focus: true,
-                        default_file,
-                    });
-                    interaction_state.set(InteractionState::Enable);
-                }
-                Err(err) => {
-                    error!("Failed loading site {:?}", err);
-                }
-            }
-        }
         WorkspaceData::Workcell(data) => {
             info!("Opening workcell file");
             match Workcell::from_bytes(&data) {
@@ -352,11 +258,6 @@ pub fn process_load_workspace_files(
                 }
             }
         }
-        WorkspaceData::LoadSite(site) => {
-            app_state.set(AppState::SiteEditor);
-            load_site.send(site);
-            interaction_state.set(InteractionState::Enable);
-        }
     }
 }
 
@@ -366,7 +267,7 @@ pub struct WorkspaceLoadingServices {
     /// Service that spawns an open file dialog and loads a site accordingly.
     pub load_workspace_from_dialog: Service<(), ()>,
     /// Service that spawns a save file dialog then creates a site with an empty level.
-    pub create_empty_workspace_from_dialog: Service<(), ()>,
+    // pub create_empty_workspace_from_dialog: Service<(), ()>,
     /// Loads the workspace at the requested path
     pub load_workspace_from_path: Service<PathBuf, ()>,
     /// Loads the workspace from the requested data
@@ -398,6 +299,8 @@ impl FromWorld for WorkspaceLoadingServices {
                 .connect(scope.terminate)
         });
 
+        // TODO(luca) consider offering this for workcell editor
+        /*
         let create_empty_workspace_from_dialog = world.spawn_workflow(|scope, builder| {
             scope
                 .input
@@ -431,6 +334,7 @@ impl FromWorld for WorkspaceLoadingServices {
                 .then(process_load_files)
                 .connect(scope.terminate)
         });
+        */
 
         let load_workspace_from_path = world.spawn_workflow(|scope, builder| {
             scope
@@ -462,7 +366,7 @@ impl FromWorld for WorkspaceLoadingServices {
 
         Self {
             load_workspace_from_dialog,
-            create_empty_workspace_from_dialog,
+            // create_empty_workspace_from_dialog,
             load_workspace_from_path,
             load_workspace_from_data,
         }
@@ -479,12 +383,14 @@ impl<'w, 's> WorkspaceLoader<'w, 's> {
 
     /// Request to spawn a dialog to select a file and create a new site with a blank level
     pub fn create_empty_from_dialog(&mut self) {
+        /*
         self.commands
             .request(
                 (),
                 self.workspace_loading.create_empty_workspace_from_dialog,
             )
             .detach();
+        */
     }
 
     /// Request to load a workspace from a path
@@ -573,7 +479,6 @@ fn dispatch_save_workspace_events(
 /// Handles the file saving events
 fn workspace_file_save_complete(
     app_state: Res<State<AppState>>,
-    mut save_site: EventWriter<SaveSite>,
     mut save_workcell: EventWriter<SaveWorkcell>,
     save_channels: Res<SaveWorkspaceChannels>,
 ) {
@@ -582,13 +487,6 @@ fn workspace_file_save_complete(
             AppState::WorkcellEditor => {
                 save_workcell.send(SaveWorkcell {
                     root: result.root,
-                    to_file: result.path,
-                    format: result.format,
-                });
-            }
-            AppState::SiteEditor | AppState::SiteDrawingEditor | AppState::SiteVisualizer => {
-                save_site.send(SaveSite {
-                    site: result.root,
                     to_file: result.path,
                     format: result.format,
                 });

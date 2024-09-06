@@ -15,9 +15,9 @@
  *
 */
 
-use crate::site::{Delete, Dependents};
+use librmf_site_editor::site::{Delete, Dependents};
 use bevy::prelude::*;
-use rmf_site_format::{FrameMarker, Joint, JointProperties, NameInWorkcell};
+use rmf_workcell_format::{FrameMarker, Joint, JointProperties, NameInWorkcell};
 
 /// Event used  to request the creation of a joint between a parent and a child frame
 #[derive(Event)]

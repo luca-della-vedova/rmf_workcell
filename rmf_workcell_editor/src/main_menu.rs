@@ -16,7 +16,10 @@
 */
 
 use super::demo_world::*;
-use crate::{AppState, Autoload, WorkspaceData, WorkspaceLoader};
+use librmf_site_editor::{Autoload, 
+    workspace::{WorkspaceData, WorkspaceLoader},
+};
+use crate::AppState;
 use bevy::{app::AppExit, prelude::*, window::PrimaryWindow};
 use bevy_egui::{egui, EguiContexts};
 
@@ -24,7 +27,6 @@ fn egui_ui(
     mut egui_context: EguiContexts,
     mut _exit: EventWriter<AppExit>,
     mut workspace_loader: WorkspaceLoader,
-    mut _app_state: ResMut<State<AppState>>,
     autoload: Option<ResMut<Autoload>>,
     primary_windows: Query<Entity, With<PrimaryWindow>>,
 ) {
@@ -56,10 +58,6 @@ fn egui_ui(
             ui.add_space(10.);
 
             ui.horizontal(|ui| {
-                if ui.button("View demo map").clicked() {
-                    workspace_loader.load_from_data(WorkspaceData::LegacyBuilding(demo_office()));
-                }
-
                 if ui.button("Open a file").clicked() {
                     workspace_loader.load_from_dialog();
                 }
@@ -76,12 +74,6 @@ fn egui_ui(
                 //     )));
                 // }
 
-                // TODO(@mxgrey): Bring this back when we have time to fix the
-                // warehouse generator.
-                // if ui.button("Warehouse generator").clicked() {
-                //     info!("Entering warehouse generator");
-                //     _app_state.overwrite_set(AppState::WarehouseGenerator).unwrap();
-                // }
             });
 
             #[cfg(not(target_arch = "wasm32"))]

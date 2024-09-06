@@ -15,11 +15,11 @@
  *
 */
 
-use crate::interaction::{InteractionAssets, Selectable};
-use crate::site::SiteAssets;
-use crate::CurrentWorkspace;
+use librmf_site_editor::interaction::{InteractionAssets, Selectable};
+use librmf_site_editor::site::SiteAssets;
+use librmf_site_editor::workspace::CurrentWorkspace;
 use bevy::prelude::*;
-use rmf_site_format::NameOfWorkcell;
+use rmf_workcell_format::NameOfWorkcell;
 
 /// Used as an event to command that a new workcell should be made the current one
 #[derive(Clone, Copy, Debug, Event)]

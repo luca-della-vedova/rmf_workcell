@@ -15,10 +15,10 @@
  *
 */
 
-use crate::{
+use librmf_site_editor::{
     interaction::*,
     keyboard::KeyboardServices,
-    site::{drawing_editor::CurrentEditDrawing, Anchor, AnchorBundle, DrawingMarker},
+    site::{Anchor, AnchorBundle},
     CurrentWorkspace,
 };
 use anyhow::{anyhow, Error as Anyhow};
@@ -31,37 +31,20 @@ use bevy_mod_raycast::{
     deferred::{RaycastMesh, RaycastSource},
     primitives::rays::Ray3d,
 };
-use rmf_site_format::{
-    Category, Door, Edge, Lane, LiftProperties, Measurement, NameOfSite, Pending, PixelsPerMeter,
-    Pose, Side, Wall,
+use rmf_workcell_format::{
+    Category, Pending,
+    Pose,
 };
 use std::{borrow::Borrow, collections::HashSet, error::Error};
-
-pub mod create_edges;
-use create_edges::*;
-
-pub mod create_path;
-use create_path::*;
-
-pub mod create_point;
-use create_point::*;
 
 pub mod place_object;
 pub use place_object::*;
 
-pub mod place_object_2d;
-pub use place_object_2d::*;
+pub mod place_object_3d;
+pub use place_object_3d::*;
 
-pub mod replace_point;
-use replace_point::*;
-
-pub mod replace_side;
-use replace_side::*;
-
-pub mod select_anchor;
-pub use select_anchor::*;
-
-pub const SELECT_ANCHOR_MODE_LABEL: &'static str = "select_anchor";
+pub mod replace_parent_3d;
+use replace_parent_3d::*;
 
 #[derive(Default)]
 pub struct SelectionPlugin {}
@@ -683,7 +666,7 @@ impl<'w, 's> SelectionFilter for InspectorFilter<'w, 's> {
 /// stream. You should also run [`inspector_select_service`] for [`Select`]
 /// streams.
 ///
-/// [`Category`]: rmf_site_format::Category
+/// [`Category`]: rmf_workcell_format::Category
 pub fn picking_service<Filter: SystemParam + 'static>(
     In(ContinuousService { key }): ContinuousServiceInput<(), ()>,
     orders: ContinuousQuery<(), ()>,

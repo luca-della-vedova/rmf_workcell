@@ -19,13 +19,13 @@ use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
 use std::path::PathBuf;
 
-use crate::site::{CollisionMeshMarker, Pending, VisualMeshMarker};
+use librmf_site_editor::site::{CollisionMeshMarker, Pending, VisualMeshMarker};
 use crate::workcell::urdf_package_exporter::{generate_package, PackageContext, Person};
 use crate::ExportFormat;
 
 use thiserror::Error as ThisError;
 
-use rmf_site_format::*;
+use rmf_workcell_format::*;
 
 /// Event used to trigger saving of the workcell
 #[derive(Event)]
@@ -87,7 +87,7 @@ fn assign_site_ids(world: &mut World, workcell: Entity) {
 pub fn generate_workcell(
     world: &mut World,
     root: Entity,
-) -> Result<rmf_site_format::Workcell, WorkcellGenerationError> {
+) -> Result<rmf_workcell_format::Workcell, WorkcellGenerationError> {
     assign_site_ids(world, root);
     let mut state: SystemState<(
         Query<(Entity, &Anchor, Option<&NameInWorkcell>, &SiteID, &Parent), Without<Pending>>,
@@ -312,9 +312,6 @@ pub fn save_workcell(world: &mut World) {
                         error!("Failed to export package: {err}");
                     }
                 };
-            }
-            ExportFormat::Sdf => {
-                warn!("Exporting workcells to sdf is not supported.");
             }
         }
     }

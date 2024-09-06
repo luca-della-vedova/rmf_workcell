@@ -15,10 +15,10 @@
  *
 */
 
-use crate::{
-    interaction::{ChangeProjectionMode, Selection},
-    site::{AlignSiteDrawings, Delete},
-    CreateNewWorkspace, CurrentWorkspace, SaveWorkspace, WorkspaceLoader,
+use librmf_site_editor::{
+    interaction::Selection,
+    site::Delete,
+    workspace::{CreateNewWorkspace, CurrentWorkspace, SaveWorkspace, WorkspaceLoader},
 };
 use bevy::{
     prelude::{Input as UserInput, *},
@@ -59,9 +59,7 @@ fn handle_keyboard_input(
     mut delete: EventWriter<Delete>,
     mut save_workspace: EventWriter<SaveWorkspace>,
     mut new_workspace: EventWriter<CreateNewWorkspace>,
-    mut change_camera_mode: EventWriter<ChangeProjectionMode>,
     mut debug_mode: ResMut<DebugMode>,
-    mut align_site: EventWriter<AlignSiteDrawings>,
     current_workspace: Res<CurrentWorkspace>,
     primary_windows: Query<Entity, With<PrimaryWindow>>,
     mut workspace_loader: WorkspaceLoader,
@@ -81,25 +79,12 @@ fn handle_keyboard_input(
         return;
     }
 
-    if keyboard_input.just_pressed(KeyCode::F2) {
-        change_camera_mode.send(ChangeProjectionMode::to_orthographic());
-    }
-
-    if keyboard_input.just_pressed(KeyCode::F3) {
-        change_camera_mode.send(ChangeProjectionMode::to_perspective());
-    }
-
     if keyboard_input.just_pressed(KeyCode::Delete) || keyboard_input.just_pressed(KeyCode::Back) {
         if let Some(selection) = selection.0 {
             delete.send(Delete::new(selection));
         } else {
             warn!("No selected entity to delete");
         }
-    }
-
-    if keyboard_input.just_pressed(KeyCode::D) {
-        debug_mode.0 = !debug_mode.0;
-        info!("Toggling debug mode: {debug_mode:?}");
     }
 
     // Ctrl keybindings
@@ -109,12 +94,6 @@ fn handle_keyboard_input(
                 save_workspace.send(SaveWorkspace::new().to_dialog());
             } else {
                 save_workspace.send(SaveWorkspace::new().to_default_file());
-            }
-        }
-
-        if keyboard_input.just_pressed(KeyCode::T) {
-            if let Some(site) = current_workspace.root {
-                align_site.send(AlignSiteDrawings(site));
             }
         }
 
