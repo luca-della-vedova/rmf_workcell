@@ -43,7 +43,10 @@
 //! [1]: crate::widgets::PanelWidget
 //! [2]: crate::widgets::show_panel_of_tiles
 
-use crate::AppState;
+use crate::{
+    interaction::ObjectPlacementExt,
+    AppState
+};
 use bevy::{
     ecs::{
         system::{SystemParam, SystemState},
@@ -60,9 +63,6 @@ use librmf_site_editor::interaction::{Hover, PickingBlockers};
 pub mod creation;
 use creation::*;
 
-pub mod fuel_asset_browser;
-pub use fuel_asset_browser::*;
-
 pub mod inspector;
 pub use inspector::*;
 
@@ -71,8 +71,10 @@ pub mod menu_bar;
 pub use menu_bar::*;
 
 use librmf_site_editor::widgets::{
-    console::ConsoleWidgetPlugin, prelude::*, render_panels, IconsPlugin,
+    console::ConsoleWidgetPlugin, prelude::*, render_panels, IconsPlugin, FuelAssetBrowserPlugin
 };
+
+use rmf_workcell_format::Model;
 
 /// This plugin provides the standard UI layout that was designed for the common
 /// use cases of the site editor.
@@ -86,7 +88,11 @@ impl Plugin for StandardUiPlugin {
                 IconsPlugin::default(),
                 MenuBarPlugin::default(),
                 WorkcellPropertiesPanelPlugin::default(),
-                FuelAssetBrowserPlugin::default(),
+                FuelAssetBrowserPlugin {
+                    model_spawner: |commands: &mut Commands, model: Model| {
+                        commands.place_model_3d(model);
+                    }
+                },
                 ConsoleWidgetPlugin::default(),
             ))
             .add_systems(Startup, init_ui_style)
