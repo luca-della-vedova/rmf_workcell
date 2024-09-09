@@ -32,17 +32,17 @@ use view_menu::*;
 */
 
 use librmf_site_editor::{
-    Autoload,
-    asset_loaders::AssetLoadersPlugin,
-    log::LogHistoryPlugin,
     aabb::AabbUpdatePlugin,
     animate::AnimationPlugin,
+    asset_loaders::AssetLoadersPlugin,
+    log::LogHistoryPlugin,
+    site::{ChangePlugin, RecallAssetSource, RecallPlugin, RecallPrimitiveShape, SiteAssets},
+    site::{CurrentEditDrawing, CurrentLevel, ToggleLiftDoorAvailability},
+    site::{DeletionPlugin, FuelPlugin, ModelLoadingPlugin},
     site_asset_io::SiteAssetIoPlugin,
-    wireframe::SiteWireframePlugin,
-    site::{ChangePlugin, RecallPlugin, RecallAssetSource, RecallPrimitiveShape, SiteAssets},
-    site::{FuelPlugin, DeletionPlugin, ModelLoadingPlugin},
-    site::{CurrentLevel, CurrentEditDrawing, ToggleLiftDoorAvailability},
     widgets::UserCameraDisplayPlugin,
+    wireframe::SiteWireframePlugin,
+    Autoload,
 };
 
 use crate::interaction::WorkcellInteractionPlugin;
@@ -53,7 +53,9 @@ use bevy::render::{
     RenderPlugin,
 };
 
-use rmf_workcell_format::{AssetSource, Scale, Pose, PrimitiveShape, NameOfWorkcell, NameInWorkcell};
+use rmf_workcell_format::{
+    AssetSource, NameInWorkcell, NameOfWorkcell, Pose, PrimitiveShape, Scale,
+};
 
 #[cfg_attr(not(target_arch = "wasm32"), derive(Parser))]
 pub struct CommandLineArgs {
@@ -99,7 +101,7 @@ pub fn run(command_line_args: Vec<String>) {
 }
 
 #[derive(Default)]
-pub struct WorkcellEditor { }
+pub struct WorkcellEditor {}
 
 impl Plugin for WorkcellEditor {
     fn build(&self, app: &mut App) {
@@ -179,8 +181,8 @@ impl Plugin for WorkcellEditor {
                 MainMenuPlugin,
                 WorkcellEditorPlugin,
             ));
-            // Note order matters, plugins that edit the menus must be initialized after the UI
-            // .add_plugins((ViewMenuPlugin, SiteWireframePlugin));
+        // Note order matters, plugins that edit the menus must be initialized after the UI
+        // .add_plugins((ViewMenuPlugin, SiteWireframePlugin));
 
         // Ref https://github.com/bevyengine/bevy/issues/10877. The default behavior causes issues
         // with events being accumulated when not read (i.e. scrolling mouse wheel on a UI widget).

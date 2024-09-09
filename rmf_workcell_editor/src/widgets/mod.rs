@@ -43,7 +43,6 @@
 //! [1]: crate::widgets::PanelWidget
 //! [2]: crate::widgets::show_panel_of_tiles
 
-use librmf_site_editor::interaction::{Hover, PickingBlockers};
 use crate::AppState;
 use bevy::{
     ecs::{
@@ -56,6 +55,7 @@ use bevy_egui::{
     egui::{self, Ui},
     EguiContexts,
 };
+use librmf_site_editor::interaction::{Hover, PickingBlockers};
 
 pub mod creation;
 use creation::*;
@@ -71,8 +71,7 @@ pub mod menu_bar;
 pub use menu_bar::*;
 
 use librmf_site_editor::widgets::{
-    prelude::*,
-    IconsPlugin, console::ConsoleWidgetPlugin, render_panels,
+    console::ConsoleWidgetPlugin, prelude::*, render_panels, IconsPlugin,
 };
 
 /// This plugin provides the standard UI layout that was designed for the common
@@ -101,7 +100,7 @@ impl Plugin for StandardUiPlugin {
 }
 
 #[derive(Default)]
-pub struct WorkcellPropertiesPanelPlugin { }
+pub struct WorkcellPropertiesPanelPlugin {}
 
 impl Plugin for WorkcellPropertiesPanelPlugin {
     fn build(&self, app: &mut App) {

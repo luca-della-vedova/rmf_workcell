@@ -15,13 +15,13 @@
  *
 */
 
+use bevy::{ecs::system::SystemParam, prelude::*};
+use bevy_egui::egui::Ui;
 use librmf_site_editor::{
-    site::{Dependents, },
+    site::Dependents,
     widgets::{prelude::*, Inspect, SelectorWidget},
 };
 use rmf_workcell_format::{FrameMarker, JointProperties};
-use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::Ui;
 
 #[derive(SystemParam)]
 pub struct InspectJoint<'w, 's> {

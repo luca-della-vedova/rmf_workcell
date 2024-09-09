@@ -16,10 +16,10 @@
 */
 
 use super::demo_world::*;
-use librmf_site_editor::Autoload;
-use crate::{WorkspaceData, WorkspaceLoader, AppState};
+use crate::{AppState, WorkspaceData, WorkspaceLoader};
 use bevy::{app::AppExit, prelude::*, window::PrimaryWindow};
 use bevy_egui::{egui, EguiContexts};
+use librmf_site_editor::Autoload;
 
 fn egui_ui(
     mut egui_context: EguiContexts,

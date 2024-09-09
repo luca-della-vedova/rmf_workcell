@@ -15,25 +15,18 @@
  *
 */
 
-use librmf_site_editor::{
-    interaction::{Selection},
-    site::{
-        CurrentLevel, FuelClient, ModelSpawningExt, SetFuelApiKey,
-        UpdateFuelCache,
-    },
-    widgets::prelude::*,
-    workspace::CurrentWorkspace,
-};
-use crate::{
-    interaction::{ObjectPlacement, PlaceableObject},
-};
-use rmf_workcell_format::{
-    AssetSource, Model,
-};
-use librmf_site_editor::interaction::ModelPreviewCamera;
+use crate::interaction::{ObjectPlacement, PlaceableObject};
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{self, Button, ComboBox, ImageSource, RichText, ScrollArea, Ui, Window};
 use gz_fuel::FuelModel;
+use librmf_site_editor::interaction::ModelPreviewCamera;
+use librmf_site_editor::{
+    interaction::Selection,
+    site::{CurrentLevel, FuelClient, ModelSpawningExt, SetFuelApiKey, UpdateFuelCache},
+    widgets::prelude::*,
+    workspace::CurrentWorkspace,
+};
+use rmf_workcell_format::{AssetSource, Model};
 
 /// Add a [`FuelAssetBrowser`] widget to your application.
 #[derive(Default)]

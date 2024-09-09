@@ -15,8 +15,8 @@
  *
 */
 
-use librmf_site_editor::interaction::AnchorVisualization;
 use bevy::prelude::*;
+use librmf_site_editor::interaction::AnchorVisualization;
 use rmf_workcell_format::FrameMarker;
 
 // TODO(luca) We should probably have a different mesh altogether for workcell anchors, rather than

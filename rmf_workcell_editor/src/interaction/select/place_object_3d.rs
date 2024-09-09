@@ -15,23 +15,26 @@
  *
 */
 
-use librmf_site_editor::{
-    interaction::*,
-};
-use librmf_site_editor::{
-    site::{ModelSpawningExt, AnchorBundle, Dependents, ModelLoadingRequest, CollisionMeshMarker, VisualMeshMarker},
-    widgets::canvas_tooltips::CanvasTooltips,
-    keyboard::KeyboardServices,
-};
-use rmf_workcell_format::{
-        Anchor, FrameMarker, Model, NameInSite, NameInWorkcell, Pending,
-        SiteID, WorkcellModel, Category,
-
-};
 use crate::workcell::flatten_loaded_model_hierarchy;
-use bevy::{ecs::system::{EntityCommands, SystemParam}, prelude::{*, Input as UserInput}};
+use bevy::{
+    ecs::system::{EntityCommands, SystemParam},
+    prelude::{Input as UserInput, *},
+};
 use bevy_impulse::*;
 use bevy_mod_raycast::deferred::RaycastSource;
+use librmf_site_editor::interaction::*;
+use librmf_site_editor::{
+    keyboard::KeyboardServices,
+    site::{
+        AnchorBundle, CollisionMeshMarker, Dependents, ModelLoadingRequest, ModelSpawningExt,
+        VisualMeshMarker,
+    },
+    widgets::canvas_tooltips::CanvasTooltips,
+};
+use rmf_workcell_format::{
+    Anchor, Category, FrameMarker, Model, NameInSite, NameInWorkcell, Pending, SiteID,
+    WorkcellModel,
+};
 use std::borrow::Cow;
 
 pub const PLACE_OBJECT_3D_MODE_LABEL: &'static str = "place_object_3d";
@@ -522,4 +525,3 @@ pub fn on_placement_chosen_3d(
 
     Ok(())
 }
-

@@ -24,21 +24,21 @@ pub use inspect_name::*;
 pub mod inspect_workcell_parent;
 pub use inspect_workcell_parent::*;
 
-use librmf_site_editor::{
-    interaction::Selection,
-    widgets::{
-        prelude::*,
-        InspectAnchor, InspectAnchorDependents, InspectPose, InspectScale, InspectAssetSource, InspectPrimitiveShape,
-    },
-};
-use rmf_workcell_format::{Category, SiteID};
-use librmf_site_editor::widgets::MinimalInspectorPlugin;
 use bevy::{
     ecs::system::{SystemParam, SystemState},
     prelude::*,
 };
 use bevy_egui::egui::{CollapsingHeader, Ui};
+use librmf_site_editor::widgets::MinimalInspectorPlugin;
+use librmf_site_editor::{
+    interaction::Selection,
+    widgets::{
+        prelude::*, InspectAnchor, InspectAnchorDependents, InspectAssetSource, InspectPose,
+        InspectPrimitiveShape, InspectScale,
+    },
+};
 use rmf_workcell_format::*;
+use rmf_workcell_format::{Category, SiteID};
 use smallvec::SmallVec;
 
 /// Use this to create a standard inspector plugin that covers the common use

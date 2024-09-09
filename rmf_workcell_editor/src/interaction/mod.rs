@@ -30,6 +30,6 @@ impl Plugin for WorkcellInteractionPlugin {
         app.add_plugins((
             InteractionPlugin::default(),
             place_object::ObjectPlacementPlugin::default(),
-            ));
+        ));
     }
 }

@@ -16,8 +16,8 @@
 */
 
 use librmf_site_editor::{
-    keyboard::{KeyboardServices, keyboard_just_pressed_stream},
     interaction::Selection,
+    keyboard::{keyboard_just_pressed_stream, KeyboardServices},
     site::Delete,
     workspace::{CreateNewWorkspace, CurrentWorkspace},
 };

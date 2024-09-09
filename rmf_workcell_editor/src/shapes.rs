@@ -15,9 +15,9 @@
  *
 */
 
-use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridSettings};
 use bevy::math::Affine3A;
 use bevy::prelude::*;
+use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridSettings};
 use bevy_polyline::{material::PolylineMaterial, polyline::Polyline};
 use std::collections::{BTreeMap, HashMap};
 
@@ -45,4 +45,3 @@ pub(crate) fn make_infinite_grid(
         ..Default::default()
     }
 }
-

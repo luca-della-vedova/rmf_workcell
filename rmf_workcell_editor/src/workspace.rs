@@ -20,13 +20,16 @@ use bevy_impulse::*;
 use rfd::AsyncFileDialog;
 use std::path::PathBuf;
 
-use librmf_site_editor::interaction::InteractionState;
-use librmf_site_editor::site::DefaultFile;
 use crate::workcell::{LoadWorkcell, SaveWorkcell};
 use crate::AppState;
+use librmf_site_editor::interaction::InteractionState;
+use librmf_site_editor::site::DefaultFile;
 use rmf_workcell_format::Workcell;
 
-use librmf_site_editor::workspace::{CurrentWorkspace, ChangeCurrentWorkspace, CreateNewWorkspace, WorkspaceMarker, FileDialogServices};
+use librmf_site_editor::workspace::{
+    ChangeCurrentWorkspace, CreateNewWorkspace, CurrentWorkspace, FileDialogServices,
+    WorkspaceMarker,
+};
 
 use crossbeam_channel::{Receiver, Sender};
 
@@ -257,7 +260,10 @@ pub struct WorkspaceLoadingServices {
 impl FromWorld for WorkspaceLoadingServices {
     fn from_world(world: &mut World) -> Self {
         let process_load_files = world.spawn_service(process_load_workspace_files);
-        let pick_file = world.resource::<FileDialogServices>().pick_file_for_loading.clone();
+        let pick_file = world
+            .resource::<FileDialogServices>()
+            .pick_file_for_loading
+            .clone();
         // Spawn all the services
         let load_workspace_from_dialog = world.spawn_workflow(|scope, builder| {
             scope

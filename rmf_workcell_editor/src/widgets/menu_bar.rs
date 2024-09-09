@@ -15,8 +15,8 @@
  *
 */
 
-use librmf_site_editor::{widgets::prelude::*, workspace::CreateNewWorkspace};
 use crate::{SaveWorkspace, WorkspaceLoader};
+use librmf_site_editor::{widgets::prelude::*, workspace::CreateNewWorkspace};
 
 use bevy::ecs::query::Has;
 use bevy::ecs::system::SystemParam;

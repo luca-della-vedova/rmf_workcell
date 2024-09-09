@@ -15,15 +15,15 @@
  *
 */
 
+use crate::interaction::ObjectPlacement;
+use bevy::{ecs::system::SystemParam, prelude::*};
+use bevy_egui::egui::{ImageButton, Ui};
 use librmf_site_editor::{
-    interaction::{Hover},
+    interaction::Hover,
     widgets::{prelude::*, Icons, Inspect, SelectorWidget},
     workspace::CurrentWorkspace,
 };
-use crate::interaction::ObjectPlacement;
 use rmf_workcell_format::{FrameMarker, NameInWorkcell, NameOfWorkcell};
-use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::{ImageButton, Ui};
 
 #[derive(SystemParam)]
 pub struct InspectWorkcellParent<'w, 's> {
