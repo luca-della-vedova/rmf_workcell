@@ -57,7 +57,6 @@ use bevy_egui::{
     EguiContexts,
 };
 
-/*
 pub mod creation;
 use creation::*;
 
@@ -67,10 +66,14 @@ pub use fuel_asset_browser::*;
 pub mod inspector;
 pub use inspector::*;
 
+// use librmf_site_editor::widgets::menu_bar::*;
 pub mod menu_bar;
 pub use menu_bar::*;
 
-use librmf_site_editor::widgets::prelude::*;
+use librmf_site_editor::widgets::{
+    prelude::*,
+    IconsPlugin, console::ConsoleWidgetPlugin, render_panels,
+};
 
 /// This plugin provides the standard UI layout that was designed for the common
 /// use cases of the site editor.
@@ -83,8 +86,8 @@ impl Plugin for StandardUiPlugin {
             .add_plugins((
                 IconsPlugin::default(),
                 MenuBarPlugin::default(),
-                StandardPropertiesPanelPlugin::default(),
-                //FuelAssetBrowserPlugin::default(),
+                WorkcellPropertiesPanelPlugin::default(),
+                FuelAssetBrowserPlugin::default(),
                 ConsoleWidgetPlugin::default(),
             ))
             .add_systems(Startup, init_ui_style)
@@ -94,6 +97,19 @@ impl Plugin for StandardUiPlugin {
                     .in_set(RenderUiSet)
                     .run_if(in_state(AppState::WorkcellEditor)),
             );
+    }
+}
+
+#[derive(Default)]
+pub struct WorkcellPropertiesPanelPlugin { }
+
+impl Plugin for WorkcellPropertiesPanelPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_plugins((
+            PropertiesPanelPlugin::new(PanelSide::Right),
+            StandardInspectorPlugin::default(),
+            CreationPlugin::default(),
+        ));
     }
 }
 
@@ -142,4 +158,3 @@ fn init_ui_style(mut egui_context: EguiContexts) {
     visuals.override_text_color = Some(egui::Color32::from_rgb(250, 250, 250));
     egui_context.ctx_mut().set_visuals(visuals);
 }
-*/

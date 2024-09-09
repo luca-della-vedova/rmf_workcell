@@ -19,16 +19,17 @@ use librmf_site_editor::{
     interaction::*,
 };
 use librmf_site_editor::{
-    site::{AnchorBundle, Dependents, CollisionMeshMarker, VisualMeshMarker},
+    site::{ModelSpawningExt, AnchorBundle, Dependents, ModelLoadingRequest, CollisionMeshMarker, VisualMeshMarker},
     widgets::canvas_tooltips::CanvasTooltips,
     keyboard::KeyboardServices,
 };
 use rmf_workcell_format::{
         Anchor, FrameMarker, Model, NameInSite, NameInWorkcell, Pending,
-        SiteID, WorkcellModel,
+        SiteID, WorkcellModel, Category,
 
 };
-use bevy::{ecs::system::SystemParam, prelude::{*, Input as UserInput}};
+use crate::workcell::flatten_loaded_model_hierarchy;
+use bevy::{ecs::system::{EntityCommands, SystemParam}, prelude::{*, Input as UserInput}};
 use bevy_impulse::*;
 use bevy_mod_raycast::deferred::RaycastSource;
 use std::borrow::Cow;
@@ -180,7 +181,9 @@ pub fn place_object_3d_setup(
             set_visibility(cursor.dagger, &mut visibility, true);
             set_visibility(cursor.halo, &mut visibility, true);
         }
-        PlaceableObject::Model(m) | PlaceableObject::VisualMesh(m) | PlaceableObject::CollisionMesh(m) => {
+        PlaceableObject::Model(m)
+        | PlaceableObject::VisualMesh(m)
+        | PlaceableObject::CollisionMesh(m) => {
             // Spawn the model as a child of the cursor
             cursor.set_model_preview(&mut commands, Some(m.clone()));
             set_visibility(cursor.dagger, &mut visibility, false);
@@ -238,7 +241,7 @@ pub fn place_object_3d_find_placement(
     hovering: Res<Hovering>,
     mouse_button_input: Res<UserInput<MouseButton>>,
     blockers: Option<Res<PickingBlockers>>,
-    meta: Query<(Option<&'static NameInSite>, Option<&'static SiteID>)>,
+    meta: Query<(Option<&'static NameInWorkcell>, Option<&'static SiteID>)>,
     mut filter: PlaceObject3dFilter,
 ) {
     let Some(mut orders) = orders.get_mut(&srv_key) else {
@@ -458,6 +461,10 @@ pub fn on_placement_chosen_3d(
     let placement_tf = placement.compute_affine();
     let pose = Transform::from_matrix((inv_tf * placement_tf).into()).into();
 
+    let flatten_models = flatten_loaded_model_hierarchy.into_blocking_callback();
+    let add_model_components = |object: Model, mut cmd: EntityCommands| {
+        cmd.insert((NameInWorkcell(object.name.0), object.pose, object.scale));
+    };
     let id = match state.object {
         PlaceableObject::Anchor => commands
             .spawn((
@@ -467,7 +474,11 @@ pub fn on_placement_chosen_3d(
             ))
             .id(),
         PlaceableObject::Model(object) => {
-            let model_id = commands.spawn((object, VisualCue::outline())).id();
+            let model_id = commands.spawn(VisualCue::outline()).id();
+            let source = object.source.clone();
+            add_model_components(object, commands.entity(model_id));
+            let req = ModelLoadingRequest::new(model_id, source).then(flatten_models);
+            commands.spawn_model(req);
             // Create a parent anchor to contain the new model in
             commands
                 .spawn((
@@ -480,12 +491,24 @@ pub fn on_placement_chosen_3d(
                 .id()
         }
         PlaceableObject::VisualMesh(mut object) => {
+            let id = commands.spawn((VisualMeshMarker, Category::Visual)).id();
             object.pose = pose;
-            commands.spawn((object, VisualMeshMarker)).id()
+            let source = object.source.clone();
+            add_model_components(object, commands.entity(id));
+            let req = ModelLoadingRequest::new(id, source).then(flatten_models);
+            commands.spawn_model(req);
+            id
         }
         PlaceableObject::CollisionMesh(mut object) => {
+            let id = commands
+                .spawn((CollisionMeshMarker, Category::Collision))
+                .id();
             object.pose = pose;
-            commands.spawn((object, CollisionMeshMarker)).id()
+            let source = object.source.clone();
+            add_model_components(object, commands.entity(id));
+            let req = ModelLoadingRequest::new(id, source).then(flatten_models);
+            commands.spawn_model(req);
+            id
         }
     };
 
@@ -499,3 +522,4 @@ pub fn on_placement_chosen_3d(
 
     Ok(())
 }
+
