@@ -52,7 +52,7 @@ fn egui_ui(
         .title_bar(false)
         .anchor(egui::Align2::CENTER_CENTER, egui::vec2(0., 0.))
         .show(ctx, |ui| {
-            ui.heading("Welcome to The RMF Site Editor!");
+            ui.heading("Welcome to The RMF Workcell Editor!");
             ui.add_space(10.);
 
             ui.horizontal(|ui| {
@@ -64,14 +64,9 @@ fn egui_ui(
                     workspace_loader.create_empty_from_dialog();
                 }
 
-                // TODO(@mxgrey): Bring this back when we have finished developing
-                // the key features for workcell editing.
-                // if ui.button("Workcell Editor").clicked() {
-                //     workspace_loader.send(LoadWorkspace::Data(WorkspaceData::Workcell(
-                //         demo_workcell(),
-                //     )));
-                // }
-
+                if ui.button("Demo workcell").clicked() {
+                    workspace_loader.load_from_data(WorkspaceData::Workcell(demo_workcell()));
+                }
             });
 
             #[cfg(not(target_arch = "wasm32"))]

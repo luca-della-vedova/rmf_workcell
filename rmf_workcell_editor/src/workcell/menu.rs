@@ -15,10 +15,9 @@
  *
 */
 
-use librmf_site_editor::widgets::menu_bar::{FileMenu, MenuEvent, MenuItem, MenuVisualizationStates};
-use crate::{AppState, ExportFormat, SaveWorkspace, SaveWorkspaceDestination};
+use librmf_site_editor::widgets::menu_bar::{FileMenu, MenuEvent, MenuItem};
+use crate::{ExportFormat, SaveWorkspace, SaveWorkspaceDestination};
 use bevy::prelude::*;
-use std::collections::HashSet;
 
 /// Keeps track of which entity is associated to the export urdf button.
 #[derive(Resource)]
@@ -28,14 +27,10 @@ pub struct ExportUrdfMenu {
 
 impl FromWorld for ExportUrdfMenu {
     fn from_world(world: &mut World) -> Self {
-        let workcell_states = HashSet::from([AppState::WorkcellEditor]);
         // TODO(luca) add shortcut text for Ctrl-E
         let file_header = world.resource::<FileMenu>().get();
         let export_urdf = world
-            .spawn((
-                MenuItem::Text("Export Urdf".to_string()),
-                //MenuVisualizationStates(workcell_states),
-            ))
+            .spawn(MenuItem::Text("Export Urdf".to_string()))
             .set_parent(file_header)
             .id();
 

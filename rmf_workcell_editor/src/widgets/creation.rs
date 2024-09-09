@@ -17,14 +17,14 @@
 
 use librmf_site_editor::{
     inspector::{InspectAssetSourceComponent, InspectScaleComponent},
-    interaction::{AnchorSelection, ObjectPlacement, Selection},
+    interaction::{AnchorSelection, Selection},
     site::{
         AssetSource, DefaultFile, Recall, RecallAssetSource, Scale,
     },
     widgets::{prelude::*, AssetGalleryStatus},
     CurrentWorkspace,
 };
-use crate::interaction::PlaceableObject;
+use crate::interaction::{ObjectPlacement, PlaceableObject};
 use crate::AppState;
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{CollapsingHeader, Ui};

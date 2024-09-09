@@ -41,13 +41,14 @@ use librmf_site_editor::{
     wireframe::SiteWireframePlugin,
     // TODO(luca) remove this and reimplement
     // widgets::StandardUiPlugin,
-    site::{Delete, SiteAssets, FuelClient, UpdateFuelCache, SetFuelApiKey, FuelCacheUpdateChannel, FuelCacheProgressChannel},
-    interaction::InteractionPlugin,
+    site::{SiteAssets},
+    site::{FuelPlugin, DeletionPlugin, ModelLoadingPlugin},
+    //interaction::InteractionPlugin,
     site::{CurrentLevel, CurrentEditDrawing, ToggleLiftDoorAvailability},
     widgets::UserCameraDisplayPlugin,
 };
 
-// use crate::interaction::InteractionPlugin;
+use crate::interaction::WorkcellInteractionPlugin;
 
 use bevy::render::{
     render_resource::{AddressMode, SamplerDescriptor},
@@ -144,26 +145,26 @@ impl Plugin for WorkcellEditor {
 
         app.insert_resource(DirectionalLightShadowMap { size: 2048 })
             .init_resource::<SiteAssets>()
-            // TODO(luca) create a fuel plugin to bundle all of these
-            .add_event::<UpdateFuelCache>()
-            .add_event::<SetFuelApiKey>()
-            .init_resource::<FuelClient>()
-            .init_resource::<FuelCacheUpdateChannel>()
-            .init_resource::<FuelCacheProgressChannel>()
             // TODO(luca) remove the need to add all of these for interaction plugin to work
-            .add_plugins((UserCameraDisplayPlugin::default()))
+            .add_plugins(UserCameraDisplayPlugin::default())
             .init_resource::<CurrentEditDrawing>()
             .init_resource::<CurrentLevel>()
             .add_event::<ToggleLiftDoorAvailability>()
-            .add_event::<Delete>()
+            // TODO(luca) remove this when adding widgets
+            .init_resource::<librmf_site_editor::widgets::canvas_tooltips::CanvasTooltips>()
             .add_state::<AppState>()
+            .add_plugins((
+                ModelLoadingPlugin::default(),
+                FuelPlugin::default(),
+                DeletionPlugin,
+            ))
             .add_plugins((
                 AssetLoadersPlugin,
                 LogHistoryPlugin,
                 AabbUpdatePlugin,
                 EguiPlugin,
                 KeyboardInputPlugin,
-                InteractionPlugin::default(),
+                WorkcellInteractionPlugin,
                 AnimationPlugin,
                 WorkspacePlugin,
                 bevy_impulse::ImpulsePlugin::default(),
