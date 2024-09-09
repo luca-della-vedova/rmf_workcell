@@ -16,7 +16,9 @@
 */
 
 use crate::interaction::select::{place_object_3d::*, replace_parent_3d::*};
-use bevy::ecs::system::SystemParam;
+use librmf_site_editor::workspace::CurrentWorkspace;
+use librmf_site_editor::interaction::Selection;
+use bevy::ecs::system::{SystemState, Command, SystemParam};
 use bevy::prelude::*;
 use bevy_impulse::*;
 use librmf_site_editor::interaction::select::*;
@@ -60,20 +62,24 @@ impl ObjectPlacementServices {
 pub struct ObjectPlacement<'w, 's> {
     pub services: Res<'w, ObjectPlacementServices>,
     pub commands: Commands<'w, 's>,
+    current_workspace: Res<'w, CurrentWorkspace>,
+    current_selection: Res<'w, Selection>,
 }
 
 impl<'w, 's> ObjectPlacement<'w, 's> {
     pub fn place_object_3d(
         &mut self,
         object: PlaceableObject,
-        parent: Option<Entity>,
-        workspace: Entity,
     ) {
+        let Some(workspace) = self.current_workspace.root else {
+            warn!("Cannot spawn a model outside of a workspace");
+            return;
+        };
         let state = self
             .commands
             .spawn(SelectorInput(PlaceObject3d {
                 object,
-                parent,
+                parent: self.current_selection.0,
                 workspace,
             }))
             .id();
@@ -98,5 +104,28 @@ impl<'w, 's> ObjectPlacement<'w, 's> {
         self.commands.add(move |world: &mut World| {
             world.send_event(run);
         });
+    }
+}
+
+/// Trait to be implemented to allow placing models with commands
+pub trait ObjectPlacementExt<'w, 's> {
+    fn place_model_3d(&mut self, object: Model);
+}
+
+impl<'w, 's> ObjectPlacementExt<'w, 's> for Commands<'w, 's> {
+    fn place_model_3d(&mut self, object: Model) {
+        self.add(ObjectPlaceCommand(object));
+    }
+}
+
+#[derive(Deref, DerefMut)]
+pub struct ObjectPlaceCommand(Model);
+
+impl Command for ObjectPlaceCommand {
+    fn apply(self, world: &mut World) {
+        let mut system_state: SystemState<ObjectPlacement> = SystemState::new(world);
+        let mut placement = system_state.get_mut(world);
+        placement.place_object_3d(PlaceableObject::Model(self.0));
+        system_state.apply(world);
     }
 }

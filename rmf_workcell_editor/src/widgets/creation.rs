@@ -16,12 +16,13 @@
 */
 
 use crate::interaction::{ObjectPlacement, PlaceableObject};
-use crate::{AppState, AssetGalleryStatus};
+use crate::{AppState};
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{CollapsingHeader, Ui};
 use librmf_site_editor::{
     interaction::{AnchorSelection, Selection},
     site::{AssetSource, DefaultFile, Recall, RecallAssetSource, Scale},
+    widgets::AssetGalleryStatus,
     widgets::inspector::{InspectAssetSourceComponent, InspectScaleComponent},
     widgets::prelude::*,
     workspace::CurrentWorkspace,
@@ -146,12 +147,7 @@ impl<'w, 's> Creation<'w, 's> {
     }
 
     pub fn place_object(&mut self, object: PlaceableObject) {
-        if let Some(workspace) = self.current_workspace.root {
-            self.object_placement
-                .place_object_3d(object, self.selection.0, workspace);
-        } else {
-            warn!("Unable to create [{object:?}] outside of a workspace");
-        }
+        self.object_placement.place_object_3d(object);
     }
 }
 
