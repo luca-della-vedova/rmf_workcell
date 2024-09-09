@@ -26,15 +26,14 @@ use workspace::*;
 mod shapes;
 
 // TODO(luca) consider using children for this rather than rewriting
-/*
 pub mod view_menu;
 use view_menu::*;
-*/
 
 use librmf_site_editor::{
     aabb::AabbUpdatePlugin,
     animate::AnimationPlugin,
     asset_loaders::AssetLoadersPlugin,
+    interaction::CategoryVisibilityPlugin,
     log::LogHistoryPlugin,
     site::{ChangePlugin, RecallAssetSource, RecallPlugin, RecallPrimitiveShape, SiteAssets},
     site::{CurrentEditDrawing, CurrentLevel, ToggleLiftDoorAvailability},
@@ -44,6 +43,8 @@ use librmf_site_editor::{
     wireframe::SiteWireframePlugin,
     Autoload,
 };
+
+use crate::workcell::WorkcellVisualizationMarker;
 
 use crate::interaction::WorkcellInteractionPlugin;
 
@@ -160,6 +161,7 @@ impl Plugin for WorkcellEditor {
                 RecallPlugin::<RecallAssetSource>::default(),
                 ChangePlugin::<PrimitiveShape>::default(),
                 RecallPlugin::<RecallPrimitiveShape>::default(),
+                CategoryVisibilityPlugin::<WorkcellVisualizationMarker>::visible(true),
             ))
             .add_state::<AppState>()
             .add_plugins((
@@ -180,9 +182,9 @@ impl Plugin for WorkcellEditor {
                 StandardUiPlugin::default(),
                 MainMenuPlugin,
                 WorkcellEditorPlugin,
-            ));
-        // Note order matters, plugins that edit the menus must be initialized after the UI
-        // .add_plugins((ViewMenuPlugin, SiteWireframePlugin));
+            ))
+            // Note order matters, plugins that edit the menus must be initialized after the UI
+            .add_plugins((ViewMenuPlugin, SiteWireframePlugin));
 
         // Ref https://github.com/bevyengine/bevy/issues/10877. The default behavior causes issues
         // with events being accumulated when not read (i.e. scrolling mouse wheel on a UI widget).

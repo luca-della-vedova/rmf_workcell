@@ -15,17 +15,12 @@
  *
 */
 
-use librmf_site_editor::interaction::{CategoryVisibility, SetCategoryVisibility};
-use crate::site::{
-    CollisionMeshMarker, DoorMarker, FiducialMarker, FloorMarker, LaneMarker, LiftCabin,
-    LiftCabinDoorMarker, LocationTags, MeasurementMarker, VisualMeshMarker, WallMarker,
-};
-use crate::widgets::menu_bar::{MenuEvent, MenuItem, MenuVisualizationStates, ViewMenu};
 use crate::workcell::WorkcellVisualizationMarker;
-use crate::AppState;
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
-use std::collections::HashSet;
+use librmf_site_editor::interaction::{CategoryVisibility, SetCategoryVisibility};
+use librmf_site_editor::site::{CollisionMeshMarker, VisualMeshMarker};
+use librmf_site_editor::widgets::menu_bar::{MenuEvent, MenuItem, ViewMenu};
 
 #[derive(SystemParam)]
 struct VisibilityEvents<'w> {
@@ -46,13 +41,13 @@ pub struct ViewMenuItems {
 
 impl FromWorld for ViewMenuItems {
     fn from_world(world: &mut World) -> Self {
+        let view_header = world.resource::<ViewMenu>().get();
         let default_visibility = world.resource::<CategoryVisibility<CollisionMeshMarker>>();
         let collisions = world
             .spawn(MenuItem::CheckBox(
                 "Collision meshes".to_string(),
                 default_visibility.0,
             ))
-            .insert(MenuVisualizationStates(active_states.clone()))
             .set_parent(view_header)
             .id();
         let default_visibility = world.resource::<CategoryVisibility<VisualMeshMarker>>();
@@ -61,7 +56,6 @@ impl FromWorld for ViewMenuItems {
                 "Visual meshes".to_string(),
                 default_visibility.0,
             ))
-            .insert(MenuVisualizationStates(active_states))
             .set_parent(view_header)
             .id();
         let default_visibility =
@@ -71,7 +65,6 @@ impl FromWorld for ViewMenuItems {
                 "Reference axis".to_string(),
                 default_visibility.0,
             ))
-            .insert(MenuVisualizationStates(workcell_states))
             .set_parent(view_header)
             .id();
 
