@@ -15,15 +15,21 @@
  *
 */
 
-use crate::{
-    interaction::select::*,
-    site::{
-        Anchor, AnchorBundle, Dependents, FrameMarker, Model, NameInSite, NameInWorkcell, Pending,
-        SiteID, WorkcellModel,
-    },
-    widgets::canvas_tooltips::CanvasTooltips,
+use librmf_site_editor::{
+    interaction::*,
 };
-use bevy::{ecs::system::SystemParam, prelude::Input as UserInput};
+use librmf_site_editor::{
+    site::{AnchorBundle, Dependents, CollisionMeshMarker, VisualMeshMarker},
+    widgets::canvas_tooltips::CanvasTooltips,
+    keyboard::KeyboardServices,
+};
+use rmf_workcell_format::{
+        Anchor, FrameMarker, Model, NameInSite, NameInWorkcell, Pending,
+        SiteID, WorkcellModel,
+
+};
+use bevy::{ecs::system::SystemParam, prelude::{*, Input as UserInput}};
+use bevy_impulse::*;
 use bevy_mod_raycast::deferred::RaycastSource;
 use std::borrow::Cow;
 
@@ -150,8 +156,8 @@ pub struct PlaceObject3d {
 pub enum PlaceableObject {
     Model(Model),
     Anchor,
-    VisualMesh(WorkcellModel),
-    CollisionMesh(WorkcellModel),
+    VisualMesh(Model),
+    CollisionMesh(Model),
 }
 
 pub fn place_object_3d_setup(
@@ -174,15 +180,9 @@ pub fn place_object_3d_setup(
             set_visibility(cursor.dagger, &mut visibility, true);
             set_visibility(cursor.halo, &mut visibility, true);
         }
-        PlaceableObject::Model(m) => {
+        PlaceableObject::Model(m) | PlaceableObject::VisualMesh(m) | PlaceableObject::CollisionMesh(m) => {
             // Spawn the model as a child of the cursor
             cursor.set_model_preview(&mut commands, Some(m.clone()));
-            set_visibility(cursor.dagger, &mut visibility, false);
-            set_visibility(cursor.halo, &mut visibility, false);
-        }
-        PlaceableObject::VisualMesh(m) | PlaceableObject::CollisionMesh(m) => {
-            // Spawn the model as a child of the cursor
-            cursor.set_workcell_model_preview(&mut commands, Some(m.clone()));
             set_visibility(cursor.dagger, &mut visibility, false);
             set_visibility(cursor.halo, &mut visibility, false);
         }
@@ -481,15 +481,11 @@ pub fn on_placement_chosen_3d(
         }
         PlaceableObject::VisualMesh(mut object) => {
             object.pose = pose;
-            let mut cmd = commands.spawn(VisualMeshMarker);
-            object.add_bevy_components(&mut cmd);
-            cmd.id()
+            commands.spawn((object, VisualMeshMarker)).id()
         }
         PlaceableObject::CollisionMesh(mut object) => {
             object.pose = pose;
-            let mut cmd = commands.spawn(CollisionMeshMarker);
-            object.add_bevy_components(&mut cmd);
-            cmd.id()
+            commands.spawn((object, CollisionMeshMarker)).id()
         }
     };
 
