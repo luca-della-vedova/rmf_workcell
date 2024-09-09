@@ -37,12 +37,17 @@ use librmf_site_editor::{
     log::LogHistoryPlugin,
     aabb::AabbUpdatePlugin,
     animate::AnimationPlugin,
-    interaction::InteractionPlugin,
     site_asset_io::SiteAssetIoPlugin,
     wireframe::SiteWireframePlugin,
     // TODO(luca) remove this and reimplement
-    widgets::StandardUiPlugin,
+    // widgets::StandardUiPlugin,
+    site::{Delete, SiteAssets, FuelClient, UpdateFuelCache, SetFuelApiKey, FuelCacheUpdateChannel, FuelCacheProgressChannel},
+    interaction::InteractionPlugin,
+    site::{CurrentLevel, CurrentEditDrawing, ToggleLiftDoorAvailability},
+    widgets::UserCameraDisplayPlugin,
 };
+
+// use crate::interaction::InteractionPlugin;
 
 use bevy::render::{
     render_resource::{AddressMode, SamplerDescriptor},
@@ -89,26 +94,20 @@ pub fn run(command_line_args: Vec<String>) {
         }
     }
 
-    app.add_plugins(SiteEditor::default());
+    app.add_plugins(WorkcellEditor::default());
     app.run();
 }
 
 #[derive(Default)]
-pub struct SiteEditor { }
+pub struct WorkcellEditor { }
 
-impl SiteEditor {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
-impl Plugin for SiteEditor {
+impl Plugin for WorkcellEditor {
     fn build(&self, app: &mut App) {
         // TODO(luca) clean this
         let mut plugins = DefaultPlugins.build();
         plugins = plugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "RMF Site Editor".to_owned(),
+                title: "RMF Workcell Editor".to_owned(),
                 #[cfg(not(target_arch = "wasm32"))]
                 resolution: (1600., 900.).into(),
                 #[cfg(target_arch = "wasm32")]
@@ -144,6 +143,19 @@ impl Plugin for SiteEditor {
         ));
 
         app.insert_resource(DirectionalLightShadowMap { size: 2048 })
+            .init_resource::<SiteAssets>()
+            // TODO(luca) create a fuel plugin to bundle all of these
+            .add_event::<UpdateFuelCache>()
+            .add_event::<SetFuelApiKey>()
+            .init_resource::<FuelClient>()
+            .init_resource::<FuelCacheUpdateChannel>()
+            .init_resource::<FuelCacheProgressChannel>()
+            // TODO(luca) remove the need to add all of these for interaction plugin to work
+            .add_plugins((UserCameraDisplayPlugin::default()))
+            .init_resource::<CurrentEditDrawing>()
+            .init_resource::<CurrentLevel>()
+            .add_event::<ToggleLiftDoorAvailability>()
+            .add_event::<Delete>()
             .add_state::<AppState>()
             .add_plugins((
                 AssetLoadersPlugin,
@@ -155,7 +167,7 @@ impl Plugin for SiteEditor {
                 AnimationPlugin,
                 WorkspacePlugin,
                 bevy_impulse::ImpulsePlugin::default(),
-                StandardUiPlugin::default(),
+                // StandardUiPlugin::default(),
                 MainMenuPlugin,
                 WorkcellEditorPlugin,
             ));

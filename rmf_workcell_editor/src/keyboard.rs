@@ -16,10 +16,13 @@
 */
 
 use librmf_site_editor::{
+    keyboard::{KeyboardServices, keyboard_just_pressed_stream},
     interaction::Selection,
     site::Delete,
-    workspace::{CreateNewWorkspace, CurrentWorkspace, SaveWorkspace, WorkspaceLoader},
+    workspace::{CreateNewWorkspace, CurrentWorkspace},
 };
+
+use crate::workspace::{SaveWorkspace, WorkspaceLoader};
 use bevy::{
     prelude::{Input as UserInput, *},
     window::PrimaryWindow,
@@ -107,27 +110,4 @@ fn handle_keyboard_input(
             workspace_loader.load_from_dialog();
         }
     }
-}
-
-pub fn keyboard_just_pressed_stream(
-    In(ContinuousService { key }): ContinuousServiceInput<(), (), StreamOf<KeyCode>>,
-    mut orders: ContinuousQuery<(), (), StreamOf<KeyCode>>,
-    keyboard_input: Res<UserInput<KeyCode>>,
-) {
-    let Some(mut orders) = orders.get_mut(&key) else {
-        return;
-    };
-
-    if orders.is_empty() {
-        return;
-    }
-
-    for key_code in keyboard_input.get_just_pressed() {
-        orders.for_each(|order| order.streams().send(StreamOf(*key_code)));
-    }
-}
-
-#[derive(Resource)]
-pub struct KeyboardServices {
-    pub keyboard_just_pressed: Service<(), (), StreamOf<KeyCode>>,
 }

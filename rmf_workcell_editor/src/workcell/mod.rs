@@ -85,7 +85,7 @@ impl Plugin for WorkcellEditorPlugin {
                     reload_failed_models_with_new_api_key,
                     handle_workcell_keyboard_input,
                     change_workcell.before(load_workcell),
-                    handle_export_urdf_menu_events,
+                    // handle_export_urdf_menu_events,
                 )
                     .run_if(in_state(AppState::WorkcellEditor)),
             )
@@ -107,6 +107,6 @@ impl Plugin for WorkcellEditorPlugin {
 
     // Put the UI dependent plugins in `finish` to make sure the interaction is initialized first
     fn finish(&self, app: &mut App) {
-        app.init_resource::<ExportUrdfMenu>();
+        // app.init_resource::<ExportUrdfMenu>();
     }
 }
