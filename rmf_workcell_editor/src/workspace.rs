@@ -26,23 +26,9 @@ use crate::workcell::{LoadWorkcell, SaveWorkcell};
 use crate::AppState;
 use rmf_workcell_format::Workcell;
 
+use librmf_site_editor::workspace::{CurrentWorkspace, ChangeCurrentWorkspace, CreateNewWorkspace, WorkspaceMarker, FileDialogServices};
+
 use crossbeam_channel::{Receiver, Sender};
-
-/// Used as an event to command that a new workspace should be made the current one
-#[derive(Clone, Copy, Debug, Event)]
-pub struct ChangeCurrentWorkspace {
-    /// What should the current site be
-    pub root: Entity,
-}
-
-/// Used as an event to command that a new workspace should be created, behavior will depend on
-/// what app mode the editor is currently in
-#[derive(Event)]
-pub struct CreateNewWorkspace;
-
-/// Apply this component to all workspace types
-#[derive(Component)]
-pub struct WorkspaceMarker;
 
 #[derive(Clone)]
 pub enum WorkspaceData {
@@ -62,15 +48,6 @@ impl WorkspaceData {
             None
         }
     }
-}
-
-/// Used as a resource that keeps track of the current workspace
-// TODO(@mxgrey): Consider a workspace stack, e.g. so users can temporarily edit
-// a workcell inside of a site and then revert back into the site.
-#[derive(Clone, Copy, Debug, Default, Resource)]
-pub struct CurrentWorkspace {
-    pub root: Option<Entity>,
-    pub display: bool,
 }
 
 pub struct LoadWorkspaceFile(pub Option<PathBuf>, pub WorkspaceData);
@@ -166,6 +143,7 @@ impl Plugin for WorkspacePlugin {
             .init_resource::<CurrentWorkspace>()
             .init_resource::<RecallWorkspace>()
             .init_resource::<SaveWorkspaceChannels>()
+            .init_resource::<FileDialogServices>()
             .init_resource::<WorkspaceLoadingServices>()
             .add_systems(
                 Update,
@@ -191,6 +169,7 @@ pub fn dispatch_new_workspace_events(
                 error!("Sent generic new workspace while in main menu");
             }
             AppState::WorkcellEditor => {
+                println!("Creating new workspace");
                 load_workcell.send(LoadWorkcell {
                     workcell: Workcell::default(),
                     focus: true,
@@ -215,6 +194,7 @@ pub fn process_load_workspace_files(
             match Workcell::from_bytes(&data) {
                 Ok(workcell) => {
                     // Switch state
+                    println!("Setting state to workcell editor");
                     app_state.set(AppState::WorkcellEditor);
                     load_workcell.send(LoadWorkcell {
                         workcell,
@@ -277,22 +257,16 @@ pub struct WorkspaceLoadingServices {
 impl FromWorld for WorkspaceLoadingServices {
     fn from_world(world: &mut World) -> Self {
         let process_load_files = world.spawn_service(process_load_workspace_files);
+        let pick_file = world.resource::<FileDialogServices>().pick_file_for_loading.clone();
         // Spawn all the services
         let load_workspace_from_dialog = world.spawn_workflow(|scope, builder| {
             scope
                 .input
                 .chain(builder)
-                .map_async(|_| async move {
-                    if let Some(file) = AsyncFileDialog::new().pick_file().await {
-                        let data = file.read().await;
-                        #[cfg(not(target_arch = "wasm32"))]
-                        let file = file.path().to_path_buf();
-                        #[cfg(target_arch = "wasm32")]
-                        let file = PathBuf::from(file.file_name());
-                        let data = WorkspaceData::new(&file, data)?;
-                        return Some(LoadWorkspaceFile(Some(file), data));
-                    }
-                    None
+                .then(pick_file)
+                .map_async(|(path, data)| async move {
+                    let data = WorkspaceData::new(&path, data)?;
+                    return Some(LoadWorkspaceFile(Some(path), data));
                 })
                 .cancel_on_none()
                 .then(process_load_files)
