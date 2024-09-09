@@ -15,14 +15,17 @@
  *
 */
 
-use crate::{widgets::prelude::*, AppState, CreateNewWorkspace, SaveWorkspace, WorkspaceLoader};
+use librmf_site_editor::{widgets::prelude::*, workspace::CreateNewWorkspace};
+use crate::{SaveWorkspace, WorkspaceLoader};
 
 use bevy::ecs::query::Has;
+use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use bevy_egui::egui::{self, Button, Ui};
 
 use std::collections::HashSet;
 
+// TODO(luca) we only need this for custom workspace events, make them modular
 /// Add the standard menu bar to the application.
 #[derive(Default)]
 pub struct MenuBarPlugin {}
@@ -86,10 +89,6 @@ impl MenuItem {
         }
     }
 }
-
-/// Contains the states that the menu should be visualized in.
-#[derive(Debug, Clone, Component, Deref, DerefMut)]
-pub struct MenuVisualizationStates(pub HashSet<AppState>);
 
 /// This resource provides the root entity for the file menu
 #[derive(Resource)]
@@ -183,21 +182,14 @@ impl MenuEvent {
 
 /// Helper function to render a submenu starting at the entity.
 fn render_sub_menu(
-    state: &State<AppState>,
     ui: &mut Ui,
     entity: &Entity,
     children: &Query<&Children>,
     menus: &Query<(&Menu, Entity)>,
     menu_items: &Query<(&mut MenuItem, Has<MenuDisabled>)>,
-    menu_states: &Query<Option<&MenuVisualizationStates>>,
     extension_events: &mut EventWriter<MenuEvent>,
     skip_top_label: bool,
 ) {
-    if let Some(states) = menu_states.get(*entity).ok().flatten() {
-        if !states.contains(state.get()) {
-            return;
-        }
-    }
     if let Ok((e, disabled)) = menu_items.get(*entity) {
         // Draw ui
         match e {
@@ -230,13 +222,11 @@ fn render_sub_menu(
 
             for child in child_items.iter() {
                 render_sub_menu(
-                    state,
                     ui,
                     child,
                     children,
                     menus,
                     menu_items,
-                    menu_states,
                     extension_events,
                     false,
                 );
@@ -249,13 +239,11 @@ fn render_sub_menu(
 
         for child in child_items.iter() {
             render_sub_menu(
-                state,
                 ui,
                 child,
                 children,
                 menus,
                 menu_items,
-                menu_states,
                 extension_events,
                 false,
             );
@@ -265,10 +253,8 @@ fn render_sub_menu(
 
 #[derive(SystemParam)]
 struct MenuParams<'w, 's> {
-    state: Res<'w, State<AppState>>,
     menus: Query<'w, 's, (&'static Menu, Entity)>,
     menu_items: Query<'w, 's, (&'static mut MenuItem, Has<MenuDisabled>)>,
-    menu_states: Query<'w, 's, Option<&'static MenuVisualizationStates>>,
     extension_events: EventWriter<'w, MenuEvent>,
     view_menu: Res<'w, ViewMenu>,
 }
@@ -312,26 +298,22 @@ fn top_menu_bar(
                 }
 
                 render_sub_menu(
-                    &menu_params.state,
                     ui,
                     &file_menu.get(),
                     &children,
                     &menu_params.menus,
                     &menu_params.menu_items,
-                    &menu_params.menu_states,
                     &mut menu_params.extension_events,
                     true,
                 );
             });
             ui.menu_button("View", |ui| {
                 render_sub_menu(
-                    &menu_params.state,
                     ui,
                     &menu_params.view_menu.get(),
                     &children,
                     &menu_params.menus,
                     &menu_params.menu_items,
-                    &menu_params.menu_states,
                     &mut menu_params.extension_events,
                     true,
                 );
@@ -342,13 +324,11 @@ fn top_menu_bar(
                     && (*entity != file_menu.get() && *entity != menu_params.view_menu.get())
             }) {
                 render_sub_menu(
-                    &menu_params.state,
                     ui,
                     &entity,
                     &children,
                     &menu_params.menus,
                     &menu_params.menu_items,
-                    &menu_params.menu_states,
                     &mut menu_params.extension_events,
                     false,
                 );

@@ -39,11 +39,8 @@ use librmf_site_editor::{
     animate::AnimationPlugin,
     site_asset_io::SiteAssetIoPlugin,
     wireframe::SiteWireframePlugin,
-    // TODO(luca) remove this and reimplement
-    // widgets::StandardUiPlugin,
-    site::{SiteAssets},
+    site::{ChangePlugin, RecallPlugin, RecallAssetSource, RecallPrimitiveShape, SiteAssets},
     site::{FuelPlugin, DeletionPlugin, ModelLoadingPlugin},
-    //interaction::InteractionPlugin,
     site::{CurrentLevel, CurrentEditDrawing, ToggleLiftDoorAvailability},
     widgets::UserCameraDisplayPlugin,
 };
@@ -55,6 +52,8 @@ use bevy::render::{
     settings::{WgpuFeatures, WgpuSettings},
     RenderPlugin,
 };
+
+use rmf_workcell_format::{AssetSource, Scale, Pose, PrimitiveShape, NameOfWorkcell, NameInWorkcell};
 
 #[cfg_attr(not(target_arch = "wasm32"), derive(Parser))]
 pub struct CommandLineArgs {
@@ -150,8 +149,16 @@ impl Plugin for WorkcellEditor {
             .init_resource::<CurrentEditDrawing>()
             .init_resource::<CurrentLevel>()
             .add_event::<ToggleLiftDoorAvailability>()
-            // TODO(luca) remove this when adding widgets
-            .init_resource::<librmf_site_editor::widgets::canvas_tooltips::CanvasTooltips>()
+            .add_plugins((
+                ChangePlugin::<NameInWorkcell>::default(),
+                ChangePlugin::<NameOfWorkcell>::default(),
+                ChangePlugin::<Pose>::default(),
+                ChangePlugin::<Scale>::default(),
+                ChangePlugin::<AssetSource>::default(),
+                RecallPlugin::<RecallAssetSource>::default(),
+                ChangePlugin::<PrimitiveShape>::default(),
+                RecallPlugin::<RecallPrimitiveShape>::default(),
+            ))
             .add_state::<AppState>()
             .add_plugins((
                 ModelLoadingPlugin::default(),
@@ -168,7 +175,7 @@ impl Plugin for WorkcellEditor {
                 AnimationPlugin,
                 WorkspacePlugin,
                 bevy_impulse::ImpulsePlugin::default(),
-                // StandardUiPlugin::default(),
+                StandardUiPlugin::default(),
                 MainMenuPlugin,
                 WorkcellEditorPlugin,
             ));

@@ -15,12 +15,13 @@
  *
 */
 
-use crate::{
-    interaction::{Hover, ObjectPlacement},
-    site::{FrameMarker, NameInWorkcell, NameOfWorkcell},
+use librmf_site_editor::{
+    interaction::{Hover},
     widgets::{prelude::*, Icons, Inspect, SelectorWidget},
-    CurrentWorkspace,
+    workspace::CurrentWorkspace,
 };
+use crate::interaction::ObjectPlacement;
+use rmf_workcell_format::{FrameMarker, NameInWorkcell, NameOfWorkcell};
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{ImageButton, Ui};
 

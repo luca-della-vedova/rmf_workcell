@@ -24,12 +24,15 @@ pub use inspect_name::*;
 pub mod inspect_workcell_parent;
 pub use inspect_workcell_parent::*;
 
-use crate::{
+use librmf_site_editor::{
     interaction::Selection,
-    site::{Category, SiteID},
-    widgets::prelude::*,
-    AppState,
+    widgets::{
+        prelude::*,
+        InspectAnchor, InspectAnchorDependents, InspectPose, InspectScale, InspectAssetSource, InspectPrimitiveShape,
+    },
 };
+use rmf_workcell_format::{Category, SiteID};
+use librmf_site_editor::widgets::MinimalInspectorPlugin;
 use bevy::{
     ecs::system::{SystemParam, SystemState},
     prelude::*,
@@ -57,76 +60,5 @@ impl Plugin for StandardInspectorPlugin {
                 InspectionPlugin::<InspectWorkcellParent>::new(),
                 InspectionPlugin::<InspectJoint>::new(),
             ));
-    }
-}
-
-#[derive(SystemParam)]
-pub struct Inspector<'w, 's> {
-    children: Query<'w, 's, &'static Children>,
-    heading: Query<'w, 's, (Option<&'static Category>, Option<&'static SiteID>)>,
-}
-
-impl<'w, 's> WidgetSystem<Tile> for Inspector<'w, 's> {
-    fn show(
-        Tile { id, panel }: Tile,
-        ui: &mut Ui,
-        state: &mut SystemState<Self>,
-        world: &mut World,
-    ) {
-        match world.resource::<State<AppState>>().get() {
-            AppState::WorkcellEditor => {}
-            AppState::MainMenu => return,
-        }
-
-        CollapsingHeader::new("Inspect")
-            .default_open(true)
-            .show(ui, |ui| {
-                let Some(selection) = world.get_resource::<Selection>() else {
-                    ui.label("ERROR: Selection resource is not available");
-                    return;
-                };
-
-                let Some(selection) = selection.0 else {
-                    ui.label("Nothing selected");
-                    return;
-                };
-
-                let params = state.get(world);
-
-                let (label, site_id) =
-                    if let Ok((category, site_id)) = params.heading.get(selection) {
-                        (
-                            category.map(|x| x.label()).unwrap_or("<Unknown Type>"),
-                            site_id,
-                        )
-                    } else {
-                        ("<Unknown Type>", None)
-                    };
-
-                if let Some(site_id) = site_id {
-                    ui.heading(format!("{} #{}", label, site_id.0));
-                } else {
-                    ui.heading(format!("{} (unsaved)", label));
-                }
-
-                let children: Result<SmallVec<[_; 16]>, _> = params
-                    .children
-                    .get(id)
-                    .map(|children| children.iter().copied().collect());
-                let Ok(children) = children else {
-                    return;
-                };
-
-                panel.align(ui, |ui| {
-                    for child in children {
-                        let inspect = Inspect {
-                            selection,
-                            inspection: child,
-                            panel,
-                        };
-                        let _ = world.try_show_in(child, inspect, ui);
-                    }
-                });
-            });
     }
 }

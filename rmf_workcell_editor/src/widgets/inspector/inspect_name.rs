@@ -15,18 +15,16 @@
  *
 */
 
-use crate::{
+use librmf_site_editor::{
     site::Change,
     widgets::{prelude::*, Inspect},
 };
 use bevy::prelude::*;
 use bevy_egui::egui::Ui;
-use rmf_workcell_format::{NameInSite, NameInWorkcell, NameOfWorkcell};
+use rmf_workcell_format::{NameInWorkcell, NameOfWorkcell};
 
 #[derive(SystemParam)]
 pub struct InspectName<'w, 's> {
-    names_in_site: Query<'w, 's, &'static NameInSite>,
-    change_name_in_site: EventWriter<'w, Change<NameInSite>>,
     names_in_workcell: Query<'w, 's, &'static NameInWorkcell>,
     change_name_in_workcell: EventWriter<'w, Change<NameInWorkcell>>,
     names_of_workcells: Query<'w, 's, &'static NameOfWorkcell>,
@@ -43,19 +41,6 @@ impl<'w, 's> WidgetSystem<Inspect> for InspectName<'w, 's> {
         world: &mut World,
     ) {
         let mut params = state.get_mut(world);
-        if let Ok(name) = params.names_in_site.get(selection) {
-            let mut new_name = name.clone();
-            ui.horizontal(|ui| {
-                ui.label("Name");
-                ui.text_edit_singleline(&mut new_name.0);
-            });
-            if new_name != *name {
-                params
-                    .change_name_in_site
-                    .send(Change::new(new_name, selection));
-            }
-        }
-
         if let Ok(name) = params.names_in_workcell.get(selection) {
             let mut new_name = name.clone();
             ui.horizontal(|ui| {

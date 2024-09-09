@@ -15,14 +15,20 @@
  *
 */
 
-use crate::{
-    interaction::{ObjectPlacement, PlaceableObject, Selection},
+use librmf_site_editor::{
+    interaction::{Selection},
     site::{
-        AssetSource, CurrentLevel, FuelClient, Model, ModelSpawningExt, SetFuelApiKey,
+        CurrentLevel, FuelClient, ModelSpawningExt, SetFuelApiKey,
         UpdateFuelCache,
     },
     widgets::prelude::*,
-    AppState, CurrentWorkspace,
+    workspace::CurrentWorkspace,
+};
+use crate::{
+    interaction::{ObjectPlacement, PlaceableObject},
+};
+use rmf_workcell_format::{
+    AssetSource, Model,
 };
 use librmf_site_editor::interaction::ModelPreviewCamera;
 use bevy::{ecs::system::SystemParam, prelude::*};
@@ -86,7 +92,6 @@ pub struct FuelAssetBrowser<'w, 's> {
     current_workspace: Res<'w, CurrentWorkspace>,
     current_selection: Res<'w, Selection>,
     current_level: Res<'w, CurrentLevel>,
-    app_state: Res<'w, State<AppState>>,
 }
 
 fn fuel_asset_browser_panel(In(input): In<PanelWidgetInput>, world: &mut World) {
@@ -286,23 +291,16 @@ impl<'w, 's> FuelAssetBrowser<'w, 's> {
                             ..default()
                         };
 
-                        match self.app_state.get() {
-                            AppState::WorkcellEditor => {
-                                if let Some(workspace) = self.current_workspace.root {
-                                    // TODO(luca) we wouldn't need this file at all if not for
-                                    // this workflow, make it configurable?
-                                    self.place_object.place_object_3d(
-                                        PlaceableObject::Model(model),
-                                        self.current_selection.0,
-                                        workspace,
-                                    );
-                                } else {
-                                    warn!("Cannot spawn a model outside of a workspace");
-                                }
-                            }
-                            AppState::MainMenu => {
-                                warn!("Tried to spawn model while in main menu, ignoring");
-                            }
+                        if let Some(workspace) = self.current_workspace.root {
+                            // TODO(luca) we wouldn't need this file at all if not for
+                            // this workflow, make it configurable?
+                            self.place_object.place_object_3d(
+                                PlaceableObject::Model(model),
+                                self.current_selection.0,
+                                workspace,
+                            );
+                        } else {
+                            warn!("Cannot spawn a model outside of a workspace");
                         }
                     }
                 }
