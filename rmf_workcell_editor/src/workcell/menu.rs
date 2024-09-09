@@ -45,6 +45,7 @@ pub fn handle_export_urdf_menu_events(
 ) {
     for event in menu_events.read() {
         if event.clicked() && event.source() == urdf_menu.export_urdf {
+            // TODO(luca) change this to a pick_folder workflow
             save_events.send(SaveWorkspace {
                 destination: SaveWorkspaceDestination::Dialog,
                 format: ExportFormat::Urdf,
