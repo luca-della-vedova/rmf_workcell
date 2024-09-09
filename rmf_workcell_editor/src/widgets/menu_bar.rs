@@ -16,14 +16,18 @@
 */
 
 use crate::{SaveWorkspace, WorkspaceLoader};
-use librmf_site_editor::{widgets::prelude::*, workspace::CreateNewWorkspace};
+use librmf_site_editor::{
+    widgets::prelude::*,
+    widgets::{
+        render_sub_menu, FileMenu, Menu, MenuDisabled, MenuEvent, MenuItem, ToolMenu, ViewMenu,
+    },
+    workspace::CreateNewWorkspace,
+};
 
 use bevy::ecs::query::Has;
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
 use bevy_egui::egui::{self, Button, Ui};
-
-use std::collections::HashSet;
 
 // TODO(luca) we only need this for custom workspace events, make them modular
 /// Add the standard menu bar to the application.
@@ -39,215 +43,6 @@ impl Plugin for MenuBarPlugin {
             .init_resource::<FileMenu>()
             .init_resource::<ToolMenu>()
             .init_resource::<ViewMenu>();
-    }
-}
-
-/// Adding this to an entity to an entity with the [`MenuItem`] component
-/// will grey out and disable a [`MenuItem`].
-#[derive(Component)]
-pub struct MenuDisabled;
-
-/// This component represents a menu. Menus and menu items
-/// can be arranged in trees using bevy's own parent-child system.
-#[derive(Component)]
-pub struct Menu {
-    text: String,
-}
-
-impl Menu {
-    /// Create a new menu from the title
-    pub fn from_title(text: String) -> Self {
-        Self { text }
-    }
-
-    /// Retrieve the menu name
-    fn get(&self) -> String {
-        self.text.clone()
-    }
-}
-
-/// Create a new menu item
-#[derive(Component)]
-#[non_exhaustive]
-pub enum MenuItem {
-    Text(String),
-    CheckBox(String, bool),
-}
-
-impl MenuItem {
-    pub fn checkbox_value(&self) -> Option<bool> {
-        match self {
-            MenuItem::CheckBox(_, value) => Some(*value),
-            _ => None,
-        }
-    }
-
-    pub fn checkbox_value_mut(&mut self) -> Option<&mut bool> {
-        match self {
-            MenuItem::CheckBox(_, ref mut value) => Some(value),
-            _ => None,
-        }
-    }
-}
-
-/// This resource provides the root entity for the file menu
-#[derive(Resource)]
-pub struct FileMenu {
-    /// Map of menu items
-    menu_item: Entity,
-}
-
-impl FileMenu {
-    pub fn get(&self) -> Entity {
-        return self.menu_item;
-    }
-}
-
-impl FromWorld for FileMenu {
-    fn from_world(world: &mut World) -> Self {
-        let menu_item = world
-            .spawn(Menu {
-                text: "File".to_string(),
-            })
-            .id();
-        Self { menu_item }
-    }
-}
-
-/// This resource provides the root entity for the tool menu
-#[derive(Resource)]
-pub struct ToolMenu {
-    /// Map of menu items
-    menu_item: Entity,
-}
-
-impl ToolMenu {
-    pub fn get(&self) -> Entity {
-        return self.menu_item;
-    }
-}
-
-impl FromWorld for ToolMenu {
-    fn from_world(world: &mut World) -> Self {
-        let menu_item = world
-            .spawn(Menu {
-                text: "Tool".to_string(),
-            })
-            .id();
-        Self { menu_item }
-    }
-}
-
-/// This resource provides the root entity for the tool menu
-#[derive(Resource)]
-pub struct ViewMenu {
-    /// Map of menu items
-    menu_item: Entity,
-}
-
-impl ViewMenu {
-    pub fn get(&self) -> Entity {
-        return self.menu_item;
-    }
-}
-
-impl FromWorld for ViewMenu {
-    fn from_world(world: &mut World) -> Self {
-        let menu_item = world
-            .spawn(Menu {
-                text: "View".to_string(),
-            })
-            .id();
-        Self { menu_item }
-    }
-}
-
-#[non_exhaustive]
-#[derive(Event)]
-pub enum MenuEvent {
-    MenuClickEvent(Entity),
-}
-
-impl MenuEvent {
-    pub fn clicked(&self) -> bool {
-        matches!(self, Self::MenuClickEvent(_))
-    }
-
-    pub fn source(&self) -> Entity {
-        match self {
-            Self::MenuClickEvent(entity) => *entity,
-        }
-    }
-}
-
-/// Helper function to render a submenu starting at the entity.
-fn render_sub_menu(
-    ui: &mut Ui,
-    entity: &Entity,
-    children: &Query<&Children>,
-    menus: &Query<(&Menu, Entity)>,
-    menu_items: &Query<(&mut MenuItem, Has<MenuDisabled>)>,
-    extension_events: &mut EventWriter<MenuEvent>,
-    skip_top_label: bool,
-) {
-    if let Ok((e, disabled)) = menu_items.get(*entity) {
-        // Draw ui
-        match e {
-            MenuItem::Text(title) => {
-                if ui.add_enabled(!disabled, Button::new(title)).clicked() {
-                    extension_events.send(MenuEvent::MenuClickEvent(*entity));
-                }
-            }
-            MenuItem::CheckBox(title, mut value) => {
-                if ui
-                    .add_enabled(!disabled, egui::Checkbox::new(&mut value, title))
-                    .clicked()
-                {
-                    extension_events.send(MenuEvent::MenuClickEvent(*entity));
-                }
-            }
-        }
-        return;
-    }
-
-    let Ok((menu, _)) = menus.get(*entity) else {
-        return;
-    };
-
-    if !skip_top_label {
-        ui.menu_button(&menu.get(), |ui| {
-            let Ok(child_items) = children.get(*entity) else {
-                return;
-            };
-
-            for child in child_items.iter() {
-                render_sub_menu(
-                    ui,
-                    child,
-                    children,
-                    menus,
-                    menu_items,
-                    extension_events,
-                    false,
-                );
-            }
-        });
-    } else {
-        let Ok(child_items) = children.get(*entity) else {
-            return;
-        };
-
-        for child in child_items.iter() {
-            render_sub_menu(
-                ui,
-                child,
-                children,
-                menus,
-                menu_items,
-                extension_events,
-                false,
-            );
-        }
     }
 }
 
