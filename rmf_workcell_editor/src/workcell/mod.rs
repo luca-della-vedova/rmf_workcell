@@ -46,8 +46,7 @@ use bevy_infinite_grid::{InfiniteGrid, InfiniteGridPlugin};
 
 use crate::{shapes::make_infinite_grid, AppState};
 use librmf_site_editor::site::{
-    handle_new_primitive_shapes, handle_update_fuel_cache_requests, read_update_fuel_cache_results,
-    reload_failed_models_with_new_api_key, update_anchor_transforms, update_model_scales,
+    handle_new_primitive_shapes, update_anchor_transforms, update_model_scales,
     update_transforms_for_changed_poses,
 };
 
@@ -78,12 +77,9 @@ impl Plugin for WorkcellEditorPlugin {
                     handle_new_primitive_shapes,
                     handle_create_joint_events,
                     cleanup_orphaned_joints,
-                    handle_update_fuel_cache_requests,
-                    read_update_fuel_cache_results,
-                    reload_failed_models_with_new_api_key,
                     handle_workcell_keyboard_input,
                     change_workcell.before(load_workcell),
-                    // handle_export_urdf_menu_events,
+                    handle_export_urdf_menu_events,
                 )
                     .run_if(in_state(AppState::WorkcellEditor)),
             )
@@ -105,6 +101,6 @@ impl Plugin for WorkcellEditorPlugin {
 
     // Put the UI dependent plugins in `finish` to make sure the interaction is initialized first
     fn finish(&self, app: &mut App) {
-        // app.init_resource::<ExportUrdfMenu>();
+        app.init_resource::<ExportUrdfMenu>();
     }
 }
