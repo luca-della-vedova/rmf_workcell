@@ -18,6 +18,8 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+use crate::workcell::ChangeCurrentWorkcell;
+use bevy::prelude::*;
 use librmf_site_editor::{
     site::{
         AnchorBundle, CollisionMeshMarker, DefaultFile, Dependents, ModelSpawningExt,
@@ -25,8 +27,6 @@ use librmf_site_editor::{
     },
     workspace::WorkspaceMarker,
 };
-use crate::workcell::ChangeCurrentWorkcell;
-use bevy::prelude::*;
 use std::collections::HashSet;
 
 use rmf_workcell_format::{

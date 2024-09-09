@@ -15,9 +15,9 @@
  *
 */
 
-use librmf_site_editor::widgets::menu_bar::{FileMenu, MenuEvent, MenuItem};
 use crate::{ExportFormat, SaveWorkspace, SaveWorkspaceDestination};
 use bevy::prelude::*;
+use librmf_site_editor::widgets::menu_bar::{FileMenu, MenuEvent, MenuItem};
 
 /// Keeps track of which entity is associated to the export urdf button.
 #[derive(Resource)]

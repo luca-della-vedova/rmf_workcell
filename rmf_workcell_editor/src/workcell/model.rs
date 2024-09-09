@@ -15,11 +15,11 @@
  *
 */
 
+use bevy::prelude::*;
 use librmf_site_editor::{
     interaction::{Preview, Selectable, VisualCue},
     site::Dependents,
 };
-use bevy::prelude::*;
 use rmf_workcell_format::{ModelMarker, NameInSite, NameInWorkcell, Pose, PrimitiveShape};
 
 /// SDFs loaded through site editor wrap all the collisions and visuals into a single Model entity.

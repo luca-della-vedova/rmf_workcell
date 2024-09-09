@@ -15,19 +15,17 @@
  *
 */
 
+use crate::interaction::{ObjectPlacement, PlaceableObject};
+use crate::{AppState, AssetGalleryStatus};
+use bevy::{ecs::system::SystemParam, prelude::*};
+use bevy_egui::egui::{CollapsingHeader, Ui};
 use librmf_site_editor::{
-    widgets::inspector::{InspectAssetSourceComponent, InspectScaleComponent},
     interaction::{AnchorSelection, Selection},
-    site::{
-        AssetSource, DefaultFile, Recall, RecallAssetSource, Scale,
-    },
+    site::{AssetSource, DefaultFile, Recall, RecallAssetSource, Scale},
+    widgets::inspector::{InspectAssetSourceComponent, InspectScaleComponent},
     widgets::prelude::*,
     workspace::CurrentWorkspace,
 };
-use crate::interaction::{ObjectPlacement, PlaceableObject};
-use crate::{AssetGalleryStatus, AppState};
-use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::{CollapsingHeader, Ui};
 
 use rmf_workcell_format::Model;
 
@@ -37,8 +35,7 @@ pub struct CreationPlugin {}
 
 impl Plugin for CreationPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .init_resource::<PendingModel>()
+        app.init_resource::<PendingModel>()
             .add_plugins(PropertiesTilePlugin::<Creation>::new());
     }
 }

@@ -15,12 +15,12 @@
  *
 */
 
+use bevy::prelude::*;
+use bevy_egui::egui::Ui;
 use librmf_site_editor::{
     site::Change,
     widgets::{prelude::*, Inspect},
 };
-use bevy::prelude::*;
-use bevy_egui::egui::Ui;
 use rmf_workcell_format::{NameInWorkcell, NameOfWorkcell};
 
 #[derive(SystemParam)]

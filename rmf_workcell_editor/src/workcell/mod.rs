@@ -45,12 +45,10 @@ use bevy::prelude::*;
 use bevy_infinite_grid::{InfiniteGrid, InfiniteGridPlugin};
 
 use crate::{shapes::make_infinite_grid, AppState};
-use librmf_site_editor::{
-    site::{
-        handle_new_primitive_shapes, handle_update_fuel_cache_requests,
-        read_update_fuel_cache_results, reload_failed_models_with_new_api_key,
-        update_anchor_transforms, update_model_scales, update_transforms_for_changed_poses,
-    },
+use librmf_site_editor::site::{
+    handle_new_primitive_shapes, handle_update_fuel_cache_requests, read_update_fuel_cache_results,
+    reload_failed_models_with_new_api_key, update_anchor_transforms, update_model_scales,
+    update_transforms_for_changed_poses,
 };
 
 #[derive(Default)]
