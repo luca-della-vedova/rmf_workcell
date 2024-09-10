@@ -56,12 +56,17 @@ fn egui_ui(
             ui.add_space(10.);
 
             ui.horizontal(|ui| {
-                if ui.button("Open a file").clicked() {
+                if ui.button("Load workcell").clicked() {
                     workspace_loader.load_from_dialog();
                 }
 
-                if ui.button("Create new file").clicked() {
-                    workspace_loader.create_empty_from_dialog();
+                if ui.button("New workcell").clicked() {
+                    workspace_loader.load_from_data(WorkspaceData::Workcell(
+                        rmf_workcell_format::Workcell::default()
+                            .to_string()
+                            .unwrap()
+                            .into(),
+                    ));
                 }
 
                 if ui.button("Demo workcell").clicked() {

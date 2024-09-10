@@ -16,12 +16,12 @@
 */
 
 use crate::interaction::select::{place_object_3d::*, replace_parent_3d::*};
-use librmf_site_editor::workspace::CurrentWorkspace;
-use librmf_site_editor::interaction::Selection;
-use bevy::ecs::system::{SystemState, Command, SystemParam};
+use bevy::ecs::system::{Command, SystemParam, SystemState};
 use bevy::prelude::*;
 use bevy_impulse::*;
 use librmf_site_editor::interaction::select::*;
+use librmf_site_editor::interaction::Selection;
+use librmf_site_editor::workspace::CurrentWorkspace;
 use rmf_workcell_format::Model;
 
 #[derive(Default)]
@@ -67,10 +67,7 @@ pub struct ObjectPlacement<'w, 's> {
 }
 
 impl<'w, 's> ObjectPlacement<'w, 's> {
-    pub fn place_object_3d(
-        &mut self,
-        object: PlaceableObject,
-    ) {
+    pub fn place_object_3d(&mut self, object: PlaceableObject) {
         let Some(workspace) = self.current_workspace.root else {
             warn!("Cannot spawn a model outside of a workspace");
             return;

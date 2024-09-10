@@ -43,10 +43,7 @@
 //! [1]: crate::widgets::PanelWidget
 //! [2]: crate::widgets::show_panel_of_tiles
 
-use crate::{
-    interaction::ObjectPlacementExt,
-    AppState
-};
+use crate::{interaction::ObjectPlacementExt, AppState};
 use bevy::{
     ecs::{
         system::{SystemParam, SystemState},
@@ -66,12 +63,9 @@ use creation::*;
 pub mod inspector;
 pub use inspector::*;
 
-// use librmf_site_editor::widgets::menu_bar::*;
-pub mod menu_bar;
-pub use menu_bar::*;
-
 use librmf_site_editor::widgets::{
-    console::ConsoleWidgetPlugin, prelude::*, render_panels, IconsPlugin, FuelAssetBrowserPlugin
+    console::ConsoleWidgetPlugin, prelude::*, render_panels, FuelAssetBrowserPlugin, IconsPlugin,
+    MenuBarPlugin, RenderUiSet,
 };
 
 use rmf_workcell_format::Model;
@@ -91,7 +85,7 @@ impl Plugin for StandardUiPlugin {
                 FuelAssetBrowserPlugin {
                     model_spawner: |commands: &mut Commands, model: Model| {
                         commands.place_model_3d(model);
-                    }
+                    },
                 },
                 ConsoleWidgetPlugin::default(),
             ))
@@ -117,12 +111,6 @@ impl Plugin for WorkcellPropertiesPanelPlugin {
         ));
     }
 }
-
-/// This set is for systems that impact rendering the UI using egui. The
-/// [`UserCameraDisplay`] resource waits until after this set is finished before
-/// computing the user camera area.
-#[derive(SystemSet, Hash, PartialEq, Eq, Debug, Clone)]
-pub struct RenderUiSet;
 
 /// This system renders all UI panels in the application and makes sure that the
 /// UI rendering works correctly with the picking system, and any other systems

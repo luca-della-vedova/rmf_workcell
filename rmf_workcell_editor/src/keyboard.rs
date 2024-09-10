@@ -22,7 +22,7 @@ use librmf_site_editor::{
     workspace::{CreateNewWorkspace, CurrentWorkspace},
 };
 
-use crate::workspace::{SaveWorkspace, WorkspaceLoader};
+use crate::workspace::{WorkspaceLoader, WorkspaceSaver};
 use bevy::{
     prelude::{Input as UserInput, *},
     window::PrimaryWindow,
@@ -60,12 +60,12 @@ fn handle_keyboard_input(
     selection: Res<Selection>,
     mut egui_context: EguiContexts,
     mut delete: EventWriter<Delete>,
-    mut save_workspace: EventWriter<SaveWorkspace>,
     mut new_workspace: EventWriter<CreateNewWorkspace>,
     mut debug_mode: ResMut<DebugMode>,
     current_workspace: Res<CurrentWorkspace>,
     primary_windows: Query<Entity, With<PrimaryWindow>>,
     mut workspace_loader: WorkspaceLoader,
+    mut workspace_saver: WorkspaceSaver,
 ) {
     let Some(egui_context) = primary_windows
         .get_single()
@@ -94,10 +94,14 @@ fn handle_keyboard_input(
     if keyboard_input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
         if keyboard_input.just_pressed(KeyCode::S) {
             if keyboard_input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]) {
-                save_workspace.send(SaveWorkspace::new().to_dialog());
+                workspace_saver.save_to_dialog();
             } else {
-                save_workspace.send(SaveWorkspace::new().to_default_file());
+                workspace_saver.save_to_default_file();
             }
+        }
+
+        if keyboard_input.just_pressed(KeyCode::E) {
+            workspace_saver.export_urdf_to_dialog();
         }
 
         // TODO(luca) pop up a confirmation prompt if the current file is not saved, or create a
