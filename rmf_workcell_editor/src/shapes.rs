@@ -15,11 +15,8 @@
  *
 */
 
-use bevy::math::Affine3A;
 use bevy::prelude::*;
 use bevy_infinite_grid::{InfiniteGridBundle, InfiniteGridSettings};
-use bevy_polyline::{material::PolylineMaterial, polyline::Polyline};
-use std::collections::{BTreeMap, HashMap};
 
 const X_AXIS_COLOR: Color = Color::rgb(1.0, 0.2, 0.2);
 const Y_AXIS_COLOR: Color = Color::rgb(0.2, 1.0, 0.2);

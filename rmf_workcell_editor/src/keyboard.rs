@@ -19,7 +19,7 @@ use librmf_site_editor::{
     interaction::Selection,
     keyboard::{keyboard_just_pressed_stream, KeyboardServices},
     site::Delete,
-    workspace::{CreateNewWorkspace, CurrentWorkspace},
+    workspace::CreateNewWorkspace,
 };
 
 use crate::workspace::{WorkspaceLoader, WorkspaceSaver};
@@ -30,21 +30,11 @@ use bevy::{
 use bevy_egui::EguiContexts;
 use bevy_impulse::*;
 
-#[derive(Debug, Clone, Copy, Resource)]
-pub struct DebugMode(pub bool);
-
-impl FromWorld for DebugMode {
-    fn from_world(_: &mut World) -> Self {
-        DebugMode(false)
-    }
-}
-
 pub struct KeyboardInputPlugin;
 
 impl Plugin for KeyboardInputPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<DebugMode>()
-            .add_systems(Last, handle_keyboard_input);
+        app.add_systems(Last, handle_keyboard_input);
 
         let keyboard_just_pressed =
             app.spawn_continuous_service(Last, keyboard_just_pressed_stream);
@@ -61,8 +51,6 @@ fn handle_keyboard_input(
     mut egui_context: EguiContexts,
     mut delete: EventWriter<Delete>,
     mut new_workspace: EventWriter<CreateNewWorkspace>,
-    mut debug_mode: ResMut<DebugMode>,
-    current_workspace: Res<CurrentWorkspace>,
     primary_windows: Query<Entity, With<PrimaryWindow>>,
     mut workspace_loader: WorkspaceLoader,
     mut workspace_saver: WorkspaceSaver,

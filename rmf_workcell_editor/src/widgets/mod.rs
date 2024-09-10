@@ -44,15 +44,9 @@
 //! [2]: crate::widgets::show_panel_of_tiles
 
 use crate::{interaction::ObjectPlacementExt, AppState};
-use bevy::{
-    ecs::{
-        system::{SystemParam, SystemState},
-        world::EntityWorldMut,
-    },
-    prelude::*,
-};
+use bevy::{ecs::system::SystemState, prelude::*};
 use bevy_egui::{
-    egui::{self, Ui},
+    egui::{self},
     EguiContexts,
 };
 use librmf_site_editor::interaction::{Hover, PickingBlockers};

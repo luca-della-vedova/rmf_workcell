@@ -16,11 +16,9 @@
 */
 
 use crate::interaction::{ObjectPlacement, PlaceableObject};
-use crate::AppState;
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{CollapsingHeader, Ui};
 use librmf_site_editor::{
-    interaction::{AnchorSelection, Selection},
     site::{AssetSource, DefaultFile, Recall, RecallAssetSource, Scale},
     widgets::inspector::{InspectAssetSourceComponent, InspectScaleComponent},
     widgets::prelude::*,
@@ -44,23 +42,15 @@ impl Plugin for CreationPlugin {
 #[derive(SystemParam)]
 struct Creation<'w, 's> {
     default_file: Query<'w, 's, &'static DefaultFile>,
-    app_state: Res<'w, State<AppState>>,
     current_workspace: Res<'w, CurrentWorkspace>,
     pending_model: ResMut<'w, PendingModel>,
-    asset_gallery: Option<ResMut<'w, AssetGalleryStatus>>,
-    commands: Commands<'w, 's>,
-    anchor_selection: AnchorSelection<'w, 's>,
+    asset_gallery: ResMut<'w, AssetGalleryStatus>,
     object_placement: ObjectPlacement<'w, 's>,
-    selection: Res<'w, Selection>,
 }
 
 impl<'w, 's> WidgetSystem<Tile> for Creation<'w, 's> {
     fn show(_: Tile, ui: &mut Ui, state: &mut SystemState<Self>, world: &mut World) -> () {
         let mut params = state.get_mut(world);
-        match params.app_state.get() {
-            AppState::WorkcellEditor => {}
-            AppState::MainMenu => return,
-        }
         CollapsingHeader::new("Create")
             .default_open(true)
             .show(ui, |ui| {
@@ -72,77 +62,56 @@ impl<'w, 's> WidgetSystem<Tile> for Creation<'w, 's> {
 impl<'w, 's> Creation<'w, 's> {
     pub fn show_widget(&mut self, ui: &mut Ui) {
         ui.vertical(|ui| {
-            match self.app_state.get() {
-                AppState::MainMenu => {
-                    return;
-                }
-                AppState::WorkcellEditor => {
-                    if ui.button("Frame").clicked() {
-                        self.place_object(PlaceableObject::Anchor);
+            if ui.button("Frame").clicked() {
+                self.place_object(PlaceableObject::Anchor);
+            }
+            ui.add_space(10.0);
+            CollapsingHeader::new("New model")
+                .default_open(false)
+                .show(ui, |ui| {
+                    let default_file = self
+                        .current_workspace
+                        .root
+                        .map(|e| self.default_file.get(e).ok())
+                        .flatten();
+                    if let Some(new_asset_source) = InspectAssetSourceComponent::new(
+                        &self.pending_model.source,
+                        &self.pending_model.recall_source,
+                        default_file,
+                    )
+                    .show(ui)
+                    {
+                        self.pending_model.recall_source.remember(&new_asset_source);
+                        self.pending_model.source = new_asset_source;
                     }
-                }
-            }
-            match self.app_state.get() {
-                AppState::MainMenu => {}
-                AppState::WorkcellEditor => {
+                    ui.add_space(5.0);
+                    if let Some(new_scale) =
+                        InspectScaleComponent::new(&self.pending_model.scale).show(ui)
+                    {
+                        self.pending_model.scale = new_scale;
+                    }
+                    ui.add_space(5.0);
+                    if ui.button("Browse fuel").clicked() {
+                        self.asset_gallery.show = true;
+                    }
+                    if ui.button("Spawn visual").clicked() {
+                        let model = Model {
+                            source: self.pending_model.source.clone(),
+                            scale: Scale(*self.pending_model.scale),
+                            ..default()
+                        };
+                        self.place_object(PlaceableObject::VisualMesh(model));
+                    }
+                    if ui.button("Spawn collision").clicked() {
+                        let model = Model {
+                            source: self.pending_model.source.clone(),
+                            scale: Scale(*self.pending_model.scale),
+                            ..default()
+                        };
+                        self.place_object(PlaceableObject::CollisionMesh(model));
+                    }
                     ui.add_space(10.0);
-                    CollapsingHeader::new("New model")
-                        .default_open(false)
-                        .show(ui, |ui| {
-                            let default_file = self
-                                .current_workspace
-                                .root
-                                .map(|e| self.default_file.get(e).ok())
-                                .flatten();
-                            if let Some(new_asset_source) = InspectAssetSourceComponent::new(
-                                &self.pending_model.source,
-                                &self.pending_model.recall_source,
-                                default_file,
-                            )
-                            .show(ui)
-                            {
-                                self.pending_model.recall_source.remember(&new_asset_source);
-                                self.pending_model.source = new_asset_source;
-                            }
-                            ui.add_space(5.0);
-                            if let Some(new_scale) =
-                                InspectScaleComponent::new(&self.pending_model.scale).show(ui)
-                            {
-                                self.pending_model.scale = new_scale;
-                            }
-                            ui.add_space(5.0);
-                            if let Some(asset_gallery) = &mut self.asset_gallery {
-                                match self.app_state.get() {
-                                    AppState::MainMenu => {}
-                                    AppState::WorkcellEditor => {
-                                        if ui.button("Browse fuel").clicked() {
-                                            asset_gallery.show = true;
-                                        }
-                                        if ui.button("Spawn visual").clicked() {
-                                            let model = Model {
-                                                source: self.pending_model.source.clone(),
-                                                scale: Scale(*self.pending_model.scale),
-                                                ..default()
-                                            };
-                                            self.place_object(PlaceableObject::VisualMesh(model));
-                                        }
-                                        if ui.button("Spawn collision").clicked() {
-                                            let model = Model {
-                                                source: self.pending_model.source.clone(),
-                                                scale: Scale(*self.pending_model.scale),
-                                                ..default()
-                                            };
-                                            self.place_object(PlaceableObject::CollisionMesh(
-                                                model,
-                                            ));
-                                        }
-                                        ui.add_space(10.0);
-                                    }
-                                }
-                            }
-                        });
-                }
-            }
+                });
         });
     }
 

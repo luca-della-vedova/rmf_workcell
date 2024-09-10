@@ -22,4 +22,3 @@ pub mod place_object_3d;
 pub use place_object_3d::*;
 
 pub mod replace_parent_3d;
-use replace_parent_3d::*;
