@@ -24,9 +24,6 @@ pub use joint::*;
 pub mod load;
 pub use load::*;
 
-pub mod keyboard;
-pub use keyboard::*;
-
 pub mod menu;
 pub use menu::*;
 
@@ -77,7 +74,6 @@ impl Plugin for WorkcellEditorPlugin {
                     handle_new_primitive_shapes,
                     handle_create_joint_events,
                     cleanup_orphaned_joints,
-                    handle_workcell_keyboard_input,
                     change_workcell.before(load_workcell),
                     handle_export_urdf_menu_events,
                 )
@@ -101,6 +97,6 @@ impl Plugin for WorkcellEditorPlugin {
 
     // Put the UI dependent plugins in `finish` to make sure the interaction is initialized first
     fn finish(&self, app: &mut App) {
-        app.init_resource::<ExportUrdfMenu>();
+        app.init_resource::<WorkcellFileMenu>();
     }
 }

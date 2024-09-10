@@ -16,15 +16,15 @@
 */
 
 use crate::interaction::{ObjectPlacement, PlaceableObject};
-use crate::{AppState};
+use crate::AppState;
 use bevy::{ecs::system::SystemParam, prelude::*};
 use bevy_egui::egui::{CollapsingHeader, Ui};
 use librmf_site_editor::{
     interaction::{AnchorSelection, Selection},
     site::{AssetSource, DefaultFile, Recall, RecallAssetSource, Scale},
-    widgets::AssetGalleryStatus,
     widgets::inspector::{InspectAssetSourceComponent, InspectScaleComponent},
     widgets::prelude::*,
+    widgets::AssetGalleryStatus,
     workspace::CurrentWorkspace,
 };
 
