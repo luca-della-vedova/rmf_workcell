@@ -31,10 +31,7 @@ use librmf_site_editor::{
     },
     widgets::canvas_tooltips::CanvasTooltips,
 };
-use rmf_workcell_format::{
-    Anchor, Category, FrameMarker, Model, NameInSite, NameInWorkcell, Pending, SiteID,
-    WorkcellModel,
-};
+use rmf_workcell_format::{Anchor, Category, FrameMarker, Model, NameInWorkcell, Pending, SiteID};
 use std::borrow::Cow;
 
 pub const PLACE_OBJECT_3D_MODE_LABEL: &'static str = "place_object_3d";
