@@ -17,7 +17,7 @@
 
 use bevy::prelude::*;
 use librmf_site_editor::{
-    interaction::{Preview, Selectable, VisualCue},
+    interaction::{DragPlaneBundle, Preview, VisualCue},
     site::Dependents,
 };
 use rmf_workcell_format::{ModelMarker, NameInSite, NameInWorkcell, Pose, PrimitiveShape};
@@ -54,13 +54,13 @@ pub fn flatten_loaded_model_hierarchy(
             let mut parent_found = false;
             for p in AncestorIter::new(&parents, c) {
                 if models.get(p).is_ok() {
-                    commands.entity(c).insert(Selectable::new(p));
+                    commands.entity(c).insert(DragPlaneBundle::new(p, Vec3::Z));
                     parent_found = true;
                     break;
                 }
             }
             if !parent_found {
-                commands.entity(c).insert(Selectable::new(c));
+                commands.entity(c).insert(DragPlaneBundle::new(c, Vec3::Z));
             }
         }
         // Change site names to workcell names
