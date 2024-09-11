@@ -17,7 +17,7 @@ pub fn generate_package(
     std::fs::create_dir_all(&output_package_path)?;
 
     // Create the package
-    write_urdf_and_copy_mesh_files(workcell, &new_package_name, &output_package_path)?;
+    write_urdf_and_copy_mesh_files(workcell, new_package_name, &output_package_path)?;
     generate_templates(package_context, &output_package_path)?;
 
     Ok(())
@@ -57,7 +57,7 @@ fn convert_and_copy_meshes(
             ..
         } = &mut model.bundle.geometry
         {
-            let path = get_path_to_asset_file(&asset_source)?;
+            let path = get_path_to_asset_file(asset_source)?;
 
             let file_name = path
                 .file_name()
@@ -71,7 +71,7 @@ fn convert_and_copy_meshes(
                     "Unable to convert file name to str",
                 ))?;
 
-            std::fs::copy(&path, &meshes_directory_path.join(&file_name))?;
+            std::fs::copy(&path, meshes_directory_path.join(file_name))?;
             let package_path = format!("{}/meshes/{}", package_name, file_name);
             *asset_source = AssetSource::Package(package_path);
         }
@@ -89,7 +89,7 @@ fn get_path_to_asset_file(asset_source: &AssetSource) -> Result<PathBuf, Box<dyn
         .into()),
         AssetSource::Remote(asset_name) => {
             let mut asset_path = cache_path();
-            asset_path.push(&asset_name);
+            asset_path.push(asset_name);
             Ok(asset_path)
         }
         AssetSource::Local(path) => Ok(path.into()),

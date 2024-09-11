@@ -172,10 +172,7 @@ pub struct WorkspaceLoadingServices {
 impl FromWorld for WorkspaceLoadingServices {
     fn from_world(world: &mut World) -> Self {
         let process_load_files = world.spawn_service(process_load_workspace_files);
-        let pick_file = world
-            .resource::<FileDialogServices>()
-            .pick_file_and_load
-            .clone();
+        let pick_file = world.resource::<FileDialogServices>().pick_file_and_load;
         // Spawn all the services
         let loading_filters = vec![
             FileDialogFilter {
@@ -195,7 +192,7 @@ impl FromWorld for WorkspaceLoadingServices {
                 .then(pick_file)
                 .map_async(|(path, data)| async move {
                     let data = WorkspaceData::new(&path, data)?;
-                    return Some(LoadWorkspaceFile(Some(path), data));
+                    Some(LoadWorkspaceFile(Some(path), data))
                 })
                 .cancel_on_none()
                 .then(process_load_files)
@@ -315,11 +312,8 @@ impl FromWorld for WorkspaceSavingServices {
             default_files.get(ws_root).ok().map(|f| f.0.clone())
         };
         let get_default_file = get_default_file.into_blocking_callback();
-        let pick_file = world
-            .resource::<FileDialogServices>()
-            .pick_file_for_saving
-            .clone();
-        let pick_folder = world.resource::<FileDialogServices>().pick_folder.clone();
+        let pick_file = world.resource::<FileDialogServices>().pick_file_for_saving;
+        let pick_folder = world.resource::<FileDialogServices>().pick_folder;
         let saving_filters = vec![FileDialogFilter {
             name: "Workcell".into(),
             extensions: vec!["workcell.json".into()],

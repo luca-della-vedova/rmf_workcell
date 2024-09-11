@@ -30,7 +30,7 @@ use bevy_mod_raycast::deferred::RaycastSource;
 use rmf_workcell_format::{Anchor, Category, FrameMarker, Model, NameInWorkcell, Pending, SiteID};
 use std::borrow::Cow;
 
-pub const PLACE_OBJECT_3D_MODE_LABEL: &'static str = "place_object_3d";
+pub const PLACE_OBJECT_3D_MODE_LABEL: &str = "place_object_3d";
 
 pub fn spawn_place_object_3d_workflow(
     hover_service: Service<(), (), Hover>,
@@ -351,17 +351,15 @@ pub fn place_object_3d_find_placement(
                     info!(
                         "Placing object in the frame of [{}], id: {}",
                         name.map(|name| name.0.as_str()).unwrap_or("<name unset>"),
-                        id.as_ref().map(|id| id.as_str()).unwrap_or("*"),
+                        id.as_deref().unwrap_or("*"),
                     );
                 }
             }
+        } else if let Some(intersection) = intersection {
+            // The user is choosing a location to place the object.
+            order.respond(intersection);
         } else {
-            if let Some(intersection) = intersection {
-                // The user is choosing a location to place the object.
-                order.respond(intersection);
-            } else {
-                warn!("Unable to find a placement position. Try adjusting your camera angle.");
-            }
+            warn!("Unable to find a placement position. Try adjusting your camera angle.");
         }
     }
 }

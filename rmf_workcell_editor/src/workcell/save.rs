@@ -42,9 +42,7 @@ pub enum WorkcellGenerationError {
 }
 
 fn parent_in_workcell(q_parents: &Query<&Parent>, entity: Entity, root: Entity) -> bool {
-    AncestorIter::new(q_parents, entity)
-        .find(|p| *p == root)
-        .is_some()
+    AncestorIter::new(q_parents, entity).any(|p| p == root)
 }
 
 // This is mostly duplicated with the function in site/save.rs, however this case
@@ -68,11 +66,11 @@ fn assign_site_ids(world: &mut World, workcell: Entity) {
         >,
         Query<&Children>,
     )> = SystemState::new(world);
-    let (q_used_entities, q_children) = state.get(&world);
+    let (q_used_entities, q_children) = state.get(world);
 
     let mut new_entities = vec![workcell];
     for e in q_children.iter_descendants(workcell) {
-        if let Ok(_) = q_used_entities.get(e) {
+        if q_used_entities.get(e).is_ok() {
             new_entities.push(e);
         }
     }
@@ -168,7 +166,7 @@ pub fn generate_workcell(
                     bundle: WorkcellModel {
                         name: name.0.clone(),
                         geometry: geom,
-                        pose: pose.clone(),
+                        pose: *pose,
                     },
                 },
             );
@@ -181,7 +179,7 @@ pub fn generate_workcell(
                     bundle: WorkcellModel {
                         name: name.0.clone(),
                         geometry: geom,
-                        pose: pose.clone(),
+                        pose: *pose,
                     },
                 },
             );
@@ -230,7 +228,7 @@ pub fn generate_workcell(
             Parented {
                 parent,
                 bundle: Inertia {
-                    center: pose.clone(),
+                    center: *pose,
                     mass: mass.clone(),
                     moment: moment.clone(),
                 },
@@ -334,6 +332,6 @@ fn export_package(path: &PathBuf, workcell: Workcell) -> Result<(), Box<dyn std:
         urdf_file_name: "robot.urdf".to_string(),
     };
 
-    generate_package(workcell, package_context, &output_directory)?;
+    generate_package(workcell, package_context, output_directory)?;
     Ok(())
 }
