@@ -26,13 +26,15 @@ pub(crate) fn make_infinite_grid(
     fadeout_distance: f32,
     shadow_color: Option<Color>,
 ) -> InfiniteGridBundle {
-    let mut settings = InfiniteGridSettings::default();
     // The upstream bevy_infinite_grid developers use an x-z plane grid but we
     // use an x-y plane grid, so we need to make some tweaks.
-    settings.x_axis_color = X_AXIS_COLOR;
-    settings.z_axis_color = Y_AXIS_COLOR;
-    settings.fadeout_distance = fadeout_distance;
-    settings.shadow_color = shadow_color;
+    let settings = InfiniteGridSettings {
+        x_axis_color: X_AXIS_COLOR,
+        z_axis_color: Y_AXIS_COLOR,
+        fadeout_distance,
+        shadow_color,
+        ..default()
+    };
     let transform = Transform::from_rotation(Quat::from_rotation_x(90_f32.to_radians()))
         .with_scale(Vec3::splat(scale));
 

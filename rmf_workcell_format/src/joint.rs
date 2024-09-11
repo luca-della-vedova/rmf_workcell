@@ -20,8 +20,7 @@ use bevy::ecs::system::EntityCommands;
 #[cfg(feature = "bevy")]
 use bevy::prelude::{Bundle, Component, Entity, Event, SpatialBundle};
 
-use crate::NameInWorkcell;
-use rmf_site_format::Category;
+use crate::{Category, NameInWorkcell};
 
 use serde::{Deserialize, Serialize};
 

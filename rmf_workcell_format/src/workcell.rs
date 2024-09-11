@@ -281,9 +281,7 @@ impl Workcell {
                 }),
                 // As per Industrial Workcell Coordinate Conventions, the name of the workcell
                 // datum link shall be "<workcell_name>_workcell_link".
-                name: NameInWorkcell(String::from(
-                    self.properties.name.0.clone() + "_workcell_link",
-                )),
+                name: NameInWorkcell(self.properties.name.0.clone() + "_workcell_link"),
                 marker: FrameMarker,
             };
             frames.insert(
@@ -314,9 +312,9 @@ impl Workcell {
             .iter()
             .map(|(frame_id, parented_frame)| {
                 let name = parented_frame.bundle.name.0.clone();
-                let inertial = parent_to_inertials.remove(&frame_id).unwrap_or_default();
-                let collision = parent_to_collisions.remove(&frame_id).unwrap_or_default();
-                let visual = parent_to_visuals.remove(&frame_id).unwrap_or_default();
+                let inertial = parent_to_inertials.remove(frame_id).unwrap_or_default();
+                let collision = parent_to_collisions.remove(frame_id).unwrap_or_default();
+                let visual = parent_to_visuals.remove(frame_id).unwrap_or_default();
 
                 urdf_rs::Link {
                     name,
@@ -401,7 +399,7 @@ impl Workcell {
 
     pub fn to_urdf_string(&self) -> Result<String, WorkcellToUrdfError> {
         let urdf = self.to_urdf()?;
-        urdf_rs::write_to_string(&urdf).map_err(|e| WorkcellToUrdfError::WriteToStringError(e))
+        urdf_rs::write_to_string(&urdf).map_err(WorkcellToUrdfError::WriteToStringError)
     }
 
     pub fn to_urdf_writer(&self, mut writer: impl io::Write) -> Result<(), std::io::Error> {
@@ -415,11 +413,11 @@ impl Workcell {
         serde_json::de::from_reader(reader)
     }
 
-    pub fn from_str<'a>(s: &'a str) -> serde_json::Result<Self> {
+    pub fn from_str(s: &str) -> serde_json::Result<Self> {
         serde_json::de::from_str(s)
     }
 
-    pub fn from_bytes<'a>(s: &'a [u8]) -> serde_json::Result<Self> {
+    pub fn from_bytes(s: &[u8]) -> serde_json::Result<Self> {
         serde_json::from_slice(s)
     }
 }
