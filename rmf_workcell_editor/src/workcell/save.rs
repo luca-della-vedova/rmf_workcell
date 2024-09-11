@@ -90,7 +90,7 @@ pub fn generate_workcell(
 ) -> Result<rmf_workcell_format::Workcell, WorkcellGenerationError> {
     assign_site_ids(world, root);
     let mut state: SystemState<(
-        Query<(Entity, &Anchor, Option<&NameInWorkcell>, &SiteID, &Parent), Without<Pending>>,
+        Query<(Entity, &Anchor, &NameInWorkcell, &SiteID, &Parent), Without<Pending>>,
         Query<(Entity, &Pose, &Mass, &Moment, &SiteID, &Parent), Without<Pending>>,
         Query<
             (
@@ -206,7 +206,7 @@ pub fn generate_workcell(
                 parent,
                 bundle: Frame {
                     anchor: anchor.clone(),
-                    name: name.cloned(),
+                    name: name.clone(),
                     marker: FrameMarker,
                 },
             },

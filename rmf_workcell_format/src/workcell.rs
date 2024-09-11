@@ -41,11 +41,11 @@ pub struct Parented<P: RefTrait, T> {
 pub struct FrameMarker;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[cfg_attr(feature = "bevy", derive(Bundle))]
 pub struct Frame {
     #[serde(flatten)]
     pub anchor: Anchor,
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub name: Option<NameInWorkcell>,
+    pub name: NameInWorkcell,
     #[serde(skip)]
     pub marker: FrameMarker,
 }
@@ -104,8 +104,6 @@ pub enum WorkcellToUrdfError {
     WriteToStringError(#[from] urdf_rs::UrdfError),
     #[error("Broken reference: {0}")]
     BrokenReference(u32),
-    #[error("Frame {0} referred by joint {1} has no name, this is not allowed in URDF")]
-    MissingJointFrameName(u32, u32),
 }
 
 impl Workcell {
@@ -132,7 +130,7 @@ impl Workcell {
                     parent: root_id,
                     bundle: Frame {
                         anchor: Anchor::Pose3D(Pose::default()),
-                        name: Some(NameInWorkcell(link.name.clone())),
+                        name: NameInWorkcell(link.name.clone()),
                         marker: Default::default(),
                     },
                 },
@@ -283,9 +281,9 @@ impl Workcell {
                 }),
                 // As per Industrial Workcell Coordinate Conventions, the name of the workcell
                 // datum link shall be "<workcell_name>_workcell_link".
-                name: Some(NameInWorkcell(String::from(
+                name: NameInWorkcell(String::from(
                     self.properties.name.0.clone() + "_workcell_link",
-                ))),
+                )),
                 marker: FrameMarker,
             };
             frames.insert(
@@ -315,11 +313,7 @@ impl Workcell {
         let links = frames
             .iter()
             .map(|(frame_id, parented_frame)| {
-                let name = match &parented_frame.bundle.name {
-                    Some(name) => name.0.clone(),
-                    None => format!("frame_{}", &frame_id),
-                };
-
+                let name = parented_frame.bundle.name.0.clone();
                 let inertial = parent_to_inertials.remove(&frame_id).unwrap_or_default();
                 let collision = parent_to_collisions.remove(&frame_id).unwrap_or_default();
                 let visual = parent_to_visuals.remove(&frame_id).unwrap_or_default();
@@ -344,17 +338,13 @@ impl Workcell {
                     .frames
                     .get(&joint_parent)
                     .ok_or(WorkcellToUrdfError::BrokenReference(joint_parent))?;
-                let (child_frame_id, child_frame) = self
+                let child_frame = self
                     .frames
-                    .iter()
-                    .find(|(_, frame)| frame.parent == *joint_id)
+                    .values()
+                    .find(|frame| frame.parent == *joint_id)
                     .ok_or(WorkcellToUrdfError::BrokenReference(*joint_id))?;
-                let parent_name = parent_frame.bundle.name.clone().ok_or(
-                    WorkcellToUrdfError::MissingJointFrameName(joint_parent, *joint_id),
-                )?;
-                let child_name = child_frame.bundle.name.clone().ok_or(
-                    WorkcellToUrdfError::MissingJointFrameName(*child_frame_id, *joint_id),
-                )?;
+                let parent_name = parent_frame.bundle.name.clone();
+                let child_name = child_frame.bundle.name.clone();
                 let Anchor::Pose3D(pose) = child_frame.bundle.anchor else {
                     return Err(WorkcellToUrdfError::InvalidAnchorType(
                         child_frame.bundle.anchor.clone(),
@@ -444,8 +434,8 @@ pub struct UrdfRoot(pub urdf_rs::Robot);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rmf_site_format::{Angle, PrimitiveShape};
     use float_eq::{assert_float_eq, float_eq};
+    use rmf_site_format::{Angle, PrimitiveShape};
 
     fn frame_by_name(
         frames: &BTreeMap<u32, Parented<u32, Frame>>,
