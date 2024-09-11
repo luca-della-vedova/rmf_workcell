@@ -16,12 +16,10 @@
 */
 
 use crate::interaction::select::{place_object_3d::*, replace_parent_3d::*};
+use crate::{interaction::*, CurrentWorkspace};
 use bevy::ecs::system::{Command, SystemParam, SystemState};
 use bevy::prelude::*;
 use bevy_impulse::*;
-use librmf_site_editor::interaction::select::*;
-use librmf_site_editor::interaction::Selection;
-use librmf_site_editor::workspace::CurrentWorkspace;
 use rmf_workcell_format::Model;
 
 #[derive(Default)]

@@ -15,22 +15,18 @@
  *
 */
 
+use crate::interaction::*;
 use crate::workcell::flatten_loaded_model_hierarchy;
+use crate::{
+    keyboard::KeyboardServices, widgets::CanvasTooltips, AnchorBundle, CollisionMeshMarker,
+    Dependents, ModelLoadingRequest, ModelSpawningExt, VisualMeshMarker,
+};
 use bevy::{
     ecs::system::{EntityCommands, SystemParam},
     prelude::{Input as UserInput, *},
 };
 use bevy_impulse::*;
 use bevy_mod_raycast::deferred::RaycastSource;
-use librmf_site_editor::interaction::*;
-use librmf_site_editor::{
-    keyboard::KeyboardServices,
-    site::{
-        AnchorBundle, CollisionMeshMarker, Dependents, ModelLoadingRequest, ModelSpawningExt,
-        VisualMeshMarker,
-    },
-    widgets::canvas_tooltips::CanvasTooltips,
-};
 use rmf_workcell_format::{Anchor, Category, FrameMarker, Model, NameInWorkcell, Pending, SiteID};
 use std::borrow::Cow;
 

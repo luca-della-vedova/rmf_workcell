@@ -15,11 +15,10 @@
  *
 */
 
+use crate::widgets::menu_bar::{FileMenu, MenuEvent, MenuItem, TextMenuItem};
+use crate::CreateNewWorkspace;
 use crate::{WorkspaceLoader, WorkspaceSaver};
 use bevy::prelude::*;
-// TODO(luca) clean up these by reexporting them
-use librmf_site_editor::widgets::menu_bar::{FileMenu, MenuEvent, MenuItem, TextMenuItem};
-use librmf_site_editor::workspace::CreateNewWorkspace;
 
 /// Keeps track of which entity is associated to the export urdf button.
 #[derive(Resource)]

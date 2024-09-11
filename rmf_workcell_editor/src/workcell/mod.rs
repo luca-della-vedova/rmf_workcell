@@ -42,7 +42,7 @@ use bevy::prelude::*;
 use bevy_infinite_grid::{InfiniteGrid, InfiniteGridPlugin};
 
 use crate::{shapes::make_infinite_grid, AppState};
-use librmf_site_editor::site::{
+pub use librmf_site_editor::site::{
     handle_new_primitive_shapes, update_anchor_transforms, update_model_scales,
     update_transforms_for_changed_poses,
 };

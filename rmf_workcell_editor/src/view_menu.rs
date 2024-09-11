@@ -15,12 +15,14 @@
  *
 */
 
+use crate::widgets::menu_bar::{MenuEvent, MenuItem, ViewMenu};
 use crate::workcell::WorkcellVisualizationMarker;
+use crate::{
+    interaction::{CategoryVisibility, SetCategoryVisibility},
+    CollisionMeshMarker, VisualMeshMarker,
+};
 use bevy::ecs::system::SystemParam;
 use bevy::prelude::*;
-use librmf_site_editor::interaction::{CategoryVisibility, SetCategoryVisibility};
-use librmf_site_editor::site::{CollisionMeshMarker, VisualMeshMarker};
-use librmf_site_editor::widgets::menu_bar::{MenuEvent, MenuItem, ViewMenu};
 
 #[derive(SystemParam)]
 struct VisibilityEvents<'w> {

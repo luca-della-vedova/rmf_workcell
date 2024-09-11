@@ -24,11 +24,12 @@ pub use inspect_name::*;
 pub mod inspect_workcell_parent;
 pub use inspect_workcell_parent::*;
 
+use crate::widgets::prelude::*;
 use bevy::prelude::*;
-use librmf_site_editor::widgets::MinimalInspectorPlugin;
-use librmf_site_editor::widgets::{
-    prelude::*, InspectAnchor, InspectAnchorDependents, InspectAssetSource, InspectPose,
-    InspectPrimitiveShape, InspectScale,
+pub use librmf_site_editor::widgets::{
+    InspectAnchor, InspectAnchorDependents, InspectAssetSource, InspectAssetSourceComponent,
+    InspectPose, InspectPrimitiveShape, InspectScale, InspectScaleComponent,
+    MinimalInspectorPlugin,
 };
 
 /// Use this to create a standard inspector plugin that covers the common use

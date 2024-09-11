@@ -21,7 +21,7 @@ use std::path::PathBuf;
 
 use crate::workcell::urdf_package_exporter::{generate_package, PackageContext, Person};
 use crate::ExportFormat;
-use librmf_site_editor::site::{CollisionMeshMarker, Pending, VisualMeshMarker};
+use crate::{CollisionMeshMarker, VisualMeshMarker};
 
 use thiserror::Error as ThisError;
 

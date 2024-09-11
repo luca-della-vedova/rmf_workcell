@@ -19,14 +19,11 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 use crate::workcell::ChangeCurrentWorkcell;
-use bevy::prelude::*;
-use librmf_site_editor::{
-    site::{
-        AnchorBundle, CollisionMeshMarker, DefaultFile, Dependents, ModelSpawningExt,
-        PreventDeletion, VisualMeshMarker,
-    },
-    workspace::WorkspaceMarker,
+use crate::{
+    AnchorBundle, CollisionMeshMarker, DefaultFile, Dependents, ModelSpawningExt, PreventDeletion,
+    VisualMeshMarker,
 };
+use bevy::prelude::*;
 use std::collections::HashSet;
 
 use rmf_workcell_format::{
@@ -55,7 +52,6 @@ fn generate_workcell_entities(commands: &mut Commands, workcell: &Workcell) -> E
         .insert(workcell.properties.clone())
         .insert(SiteID(workcell.id))
         .insert(Category::Workcell)
-        .insert(WorkspaceMarker)
         .insert(PreventDeletion::because(
             "Workcell root cannot be deleted".to_string(),
         ))

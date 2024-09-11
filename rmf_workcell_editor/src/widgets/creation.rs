@@ -16,17 +16,16 @@
 */
 
 use crate::interaction::{ObjectPlacement, PlaceableObject};
-use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::{CollapsingHeader, Ui};
-use librmf_site_editor::{
-    site::{AssetSource, DefaultFile, Recall, RecallAssetSource, Scale},
+use crate::{
     widgets::inspector::{InspectAssetSourceComponent, InspectScaleComponent},
     widgets::prelude::*,
     widgets::AssetGalleryStatus,
-    workspace::CurrentWorkspace,
+    CurrentWorkspace, DefaultFile, Recall, RecallAssetSource,
 };
+use bevy::{ecs::system::SystemParam, prelude::*};
+use bevy_egui::egui::{CollapsingHeader, Ui};
 
-use rmf_workcell_format::Model;
+use rmf_workcell_format::{AssetSource, Model, Scale};
 
 /// This widget provides a widget with buttons for creating new site elements.
 #[derive(Default)]

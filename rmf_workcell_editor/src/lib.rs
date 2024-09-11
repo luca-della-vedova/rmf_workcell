@@ -16,7 +16,7 @@ pub mod demo_world;
 
 pub mod main_menu;
 pub mod workcell;
-use workcell::WorkcellEditorPlugin;
+use workcell::*;
 pub mod interaction;
 
 pub mod workspace;
@@ -27,22 +27,34 @@ mod shapes;
 pub mod view_menu;
 use view_menu::*;
 
+// Parts of the site editor that we reexport since they are needed to build workcell editor apps
 pub use librmf_site_editor::{
     aabb::AabbUpdatePlugin,
     animate::AnimationPlugin,
     asset_loaders::AssetLoadersPlugin,
-    interaction::CategoryVisibilityPlugin,
     log::LogHistoryPlugin,
-    site::{ChangePlugin, RecallAssetSource, RecallPlugin, RecallPrimitiveShape, SiteAssets},
+    // Misc components
+    site::{
+        AnchorBundle, CollisionMeshMarker, DefaultFile, Delete, Dependents, ModelLoadingRequest,
+        ModelSpawningExt, PreventDeletion, VisualMeshMarker,
+    },
+    site::{
+        Change, ChangePlugin, Recall, RecallAssetSource, RecallPlugin, RecallPrimitiveShape,
+        SiteAssets,
+    },
     site::{DeletionPlugin, FuelPlugin, ModelLoadingPlugin},
-    site_asset_io::SiteAssetIoPlugin,
+    site_asset_io,
     wireframe::SiteWireframePlugin,
+    // Workspace related objects that are shared with site editor, the rest are reimplemented since
+    // the functionality differs significantly
+    workspace::{
+        ChangeCurrentWorkspace, CreateNewWorkspace, CurrentWorkspace, FileDialogFilter,
+        FileDialogServices, RecallWorkspace,
+    },
     Autoload,
 };
 
-use crate::workcell::WorkcellVisualizationMarker;
-
-use crate::interaction::WorkcellInteractionPlugin;
+use crate::interaction::InteractionPlugin;
 
 use bevy::render::{
     render_resource::{AddressMode, SamplerDescriptor},
@@ -118,7 +130,7 @@ impl Plugin for WorkcellEditor {
             ..default()
         });
         app.add_plugins((
-            SiteAssetIoPlugin,
+            site_asset_io::SiteAssetIoPlugin,
             plugins
                 .disable::<LogPlugin>()
                 .set(ImagePlugin {
@@ -152,7 +164,6 @@ impl Plugin for WorkcellEditor {
                 RecallPlugin::<RecallAssetSource>::default(),
                 ChangePlugin::<PrimitiveShape>::default(),
                 RecallPlugin::<RecallPrimitiveShape>::default(),
-                CategoryVisibilityPlugin::<WorkcellVisualizationMarker>::visible(true),
             ))
             .add_state::<AppState>()
             .add_plugins((
@@ -166,7 +177,7 @@ impl Plugin for WorkcellEditor {
                 AabbUpdatePlugin,
                 EguiPlugin,
                 KeyboardInputPlugin,
-                WorkcellInteractionPlugin,
+                InteractionPlugin,
                 AnimationPlugin,
                 WorkspacePlugin,
                 bevy_impulse::ImpulsePlugin::default(),

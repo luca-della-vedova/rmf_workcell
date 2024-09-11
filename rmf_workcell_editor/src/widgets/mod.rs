@@ -43,24 +43,24 @@
 //! [1]: crate::widgets::PanelWidget
 //! [2]: crate::widgets::show_panel_of_tiles
 
+use crate::interaction::{Hover, PickingBlockers};
 use crate::{interaction::ObjectPlacementExt, AppState};
 use bevy::{ecs::system::SystemState, prelude::*};
 use bevy_egui::{
     egui::{self},
     EguiContexts,
 };
-use librmf_site_editor::interaction::{Hover, PickingBlockers};
+pub use librmf_site_editor::widgets::{
+    canvas_tooltips::CanvasTooltips, console::ConsoleWidgetPlugin, menu_bar, prelude, prelude::*,
+    render_panels, AssetGalleryStatus, FuelAssetBrowserPlugin, Icons, IconsPlugin, Inspect,
+    MenuBarPlugin, RenderUiSet, SelectorWidget,
+};
 
 pub mod creation;
 use creation::*;
 
 pub mod inspector;
 pub use inspector::*;
-
-use librmf_site_editor::widgets::{
-    console::ConsoleWidgetPlugin, prelude::*, render_panels, FuelAssetBrowserPlugin, IconsPlugin,
-    MenuBarPlugin, RenderUiSet,
-};
 
 use rmf_workcell_format::Model;
 
