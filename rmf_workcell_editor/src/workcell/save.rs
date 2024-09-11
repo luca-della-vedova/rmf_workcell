@@ -17,6 +17,7 @@
 
 use bevy::ecs::system::SystemState;
 use bevy::prelude::*;
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use crate::workcell::urdf_package_exporter::{generate_package, PackageContext, Person};
@@ -158,31 +159,23 @@ pub fn generate_workcell(
             error!("DEV Error, visual without primitive or mesh");
             continue;
         };
+        let push_model = |container: &mut BTreeMap<u32, Parented<u32, WorkcellModel>>| {
+            container.insert(
+                id.0,
+                Parented {
+                    parent,
+                    bundle: WorkcellModel {
+                        name: name.0.clone(),
+                        geometry: geom,
+                        pose: *pose,
+                    },
+                },
+            );
+        };
         if q_visuals.get(e).is_ok() {
-            workcell.visuals.insert(
-                id.0,
-                Parented {
-                    parent,
-                    bundle: WorkcellModel {
-                        name: name.0.clone(),
-                        geometry: geom,
-                        pose: *pose,
-                    },
-                },
-            );
+            push_model(&mut workcell.visuals);
         } else if q_collisions.get(e).is_ok() {
-            // TODO(luca) reduce duplication with above branch
-            workcell.collisions.insert(
-                id.0,
-                Parented {
-                    parent,
-                    bundle: WorkcellModel {
-                        name: name.0.clone(),
-                        geometry: geom,
-                        pose: *pose,
-                    },
-                },
-            );
+            push_model(&mut workcell.collisions);
         }
     }
 
@@ -301,7 +294,6 @@ pub fn save_workcell(world: &mut World) {
                 }
             }
             ExportFormat::Urdf => {
-                // TODO(luca) File name is ignored, change to pick folder instead of pick file
                 match export_package(&path, workcell) {
                     Ok(()) => {
                         info!("Successfully exported package");
@@ -315,9 +307,10 @@ pub fn save_workcell(world: &mut World) {
     }
 }
 
-fn export_package(path: &PathBuf, workcell: Workcell) -> Result<(), Box<dyn std::error::Error>> {
-    let output_directory = path.parent().ok_or("Not able to get parent")?;
-
+fn export_package(
+    output_directory: &PathBuf,
+    workcell: Workcell,
+) -> Result<(), Box<dyn std::error::Error>> {
     let package_context = PackageContext {
         license: "TODO".to_string(),
         maintainers: vec![Person {

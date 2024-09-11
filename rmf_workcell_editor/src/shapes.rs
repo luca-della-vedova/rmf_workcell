@@ -41,6 +41,6 @@ pub(crate) fn make_infinite_grid(
     InfiniteGridBundle {
         settings,
         transform,
-        ..Default::default()
+        ..default()
     }
 }

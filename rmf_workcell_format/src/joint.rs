@@ -171,7 +171,7 @@ impl JointProperties {
     }
 }
 
-// TODO(luca) should commands implementation be in rmf_site_editor instead of rmf_site_format?
+// TODO(luca) should commands implementation be in rmf_workcell_editor instead of rmf_workcell_format?
 /// Custom spawning implementation since bundles don't allow options
 #[cfg(feature = "bevy")]
 impl Joint {
