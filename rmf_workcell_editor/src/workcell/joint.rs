@@ -15,8 +15,8 @@
  *
 */
 
+use crate::{Delete, Dependents};
 use bevy::prelude::*;
-use librmf_site_editor::site::{Delete, Dependents};
 use rmf_workcell_format::{CreateJoint, FrameMarker, Joint, JointProperties, NameInWorkcell};
 
 pub fn handle_create_joint_events(

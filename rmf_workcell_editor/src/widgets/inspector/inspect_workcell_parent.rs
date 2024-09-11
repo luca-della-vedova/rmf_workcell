@@ -16,13 +16,13 @@
 */
 
 use crate::interaction::ObjectPlacement;
-use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::{ImageButton, Ui};
-use librmf_site_editor::{
+use crate::{
     interaction::Hover,
     widgets::{prelude::*, Icons, Inspect, SelectorWidget},
-    workspace::CurrentWorkspace,
+    CurrentWorkspace,
 };
+use bevy::{ecs::system::SystemParam, prelude::*};
+use bevy_egui::egui::{ImageButton, Ui};
 use rmf_workcell_format::{FrameMarker, NameInWorkcell, NameOfWorkcell};
 
 #[derive(SystemParam)]

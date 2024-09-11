@@ -1,5 +1,5 @@
+use crate::site_asset_io::cache_path;
 use crate::workcell::urdf_package_exporter::template::PackageContext;
-use librmf_site_editor::site_asset_io::cache_path;
 use rmf_workcell_format::{AssetSource, Geometry, Workcell};
 use std::error::Error;
 use std::io::{Error as IoError, ErrorKind as IoErrorKind};

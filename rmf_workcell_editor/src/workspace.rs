@@ -21,13 +21,11 @@ use std::path::PathBuf;
 
 use crate::workcell::{LoadWorkcell, SaveWorkcell};
 use crate::AppState;
-use librmf_site_editor::interaction::InteractionState;
-use librmf_site_editor::site::DefaultFile;
 use rmf_workcell_format::Workcell;
 
-use librmf_site_editor::workspace::{
-    ChangeCurrentWorkspace, CreateNewWorkspace, CurrentWorkspace, FileDialogFilter,
-    FileDialogServices, RecallWorkspace,
+use crate::{
+    interaction::InteractionState, ChangeCurrentWorkspace, CreateNewWorkspace, CurrentWorkspace,
+    DefaultFile, FileDialogFilter, FileDialogServices, RecallWorkspace,
 };
 
 #[derive(Clone)]
@@ -115,7 +113,6 @@ pub fn process_load_workspace_files(
             match Workcell::from_bytes(&data) {
                 Ok(workcell) => {
                     // Switch state
-                    println!("Setting state to workcell editor");
                     app_state.set(AppState::WorkcellEditor);
                     load_workcell.send(LoadWorkcell {
                         workcell,

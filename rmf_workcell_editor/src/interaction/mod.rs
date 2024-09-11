@@ -15,7 +15,19 @@
  *
 */
 
-use librmf_site_editor::interaction::InteractionPlugin;
+pub use librmf_site_editor::interaction::InteractionPlugin as SiteInteractionPlugin;
+// Reexported types used for widgets / plugins
+pub use librmf_site_editor::interaction::{
+    aligned_z_axis, extract_selector_input, hover_service, print_if_err, set_visibility,
+    AnchorVisualization, CategoryVisibility, CategoryVisibilityPlugin, CommonNodeErrors, Cursor,
+    DragPlaneBundle, GizmoBlockers, HighlightAnchors, Hover, Hovering, InspectorFilter,
+    InspectorService, InteractionAssets, InteractionState, IntersectGroundPlaneParams,
+    PickingBlockers, Preview, RunSelector, Select, Selectable, Selection, SelectionFilter,
+    SelectionNodeResult, SelectionServiceStages, SelectorInput, SetCategoryVisibility,
+    SiteRaycastSet, VisualCue,
+};
+
+use crate::WorkcellVisualizationMarker;
 
 pub mod select;
 pub use select::*;
@@ -23,12 +35,13 @@ pub use select::*;
 use bevy::prelude::*;
 
 #[derive(Default)]
-pub struct WorkcellInteractionPlugin;
+pub struct InteractionPlugin;
 
-impl Plugin for WorkcellInteractionPlugin {
+impl Plugin for InteractionPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            InteractionPlugin::default(),
+            SiteInteractionPlugin::default(),
+            CategoryVisibilityPlugin::<WorkcellVisualizationMarker>::visible(true),
             place_object::ObjectPlacementPlugin::default(),
         ));
     }

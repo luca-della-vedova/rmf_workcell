@@ -15,12 +15,9 @@
  *
 */
 
-use librmf_site_editor::{
-    interaction::Selection,
-    keyboard::{keyboard_just_pressed_stream, KeyboardServices},
-    site::Delete,
-    workspace::CreateNewWorkspace,
-};
+use crate::{interaction::Selection, CreateNewWorkspace, Delete};
+
+pub use librmf_site_editor::keyboard::{keyboard_just_pressed_stream, KeyboardServices};
 
 use crate::workspace::{WorkspaceLoader, WorkspaceSaver};
 use bevy::{
