@@ -64,14 +64,14 @@ fn generate_workcell_entities(commands: &mut Commands, workcell: &Workcell) -> E
                 Geometry::Primitive(primitive) => {
                     commands.entity(e).insert((
                         primitive.clone(),
-                        parented.bundle.pose.clone(),
+                        parented.bundle.pose,
                         NameInWorkcell(parented.bundle.name.clone()),
                     ));
                 }
                 Geometry::Mesh { source, scale } => {
                     commands.entity(e).insert((
                         NameInWorkcell(parented.bundle.name.clone()),
-                        parented.bundle.pose.clone(),
+                        parented.bundle.pose,
                         Scale(scale.unwrap_or(Vec3::ONE)),
                         ModelMarker,
                     ));

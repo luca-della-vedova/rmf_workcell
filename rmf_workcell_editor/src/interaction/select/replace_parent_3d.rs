@@ -200,11 +200,7 @@ pub fn replace_parent_3d_find_parent(
             continue;
         };
 
-        if AncestorIter::new(&parents, e)
-            .filter(|e| *e == object)
-            .next()
-            .is_some()
-        {
+        if AncestorIter::new(&parents, e).any(|e| e == object) {
             ignore_click = true;
             tooltips.add(Cow::Borrowed(
                 "Cannot select a child of the object to be its parent",

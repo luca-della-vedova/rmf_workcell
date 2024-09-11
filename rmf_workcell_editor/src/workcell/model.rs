@@ -87,10 +87,10 @@ pub fn flatten_loaded_model_hierarchy(
         // This might not scale well in the long run.
         let mut c_mut = commands.entity(c);
         if let Ok(cue) = cues.get(old_parent) {
-            c_mut.insert(cue.clone());
+            c_mut.insert(*cue);
         }
         if let Ok(preview) = previews.get(old_parent) {
-            c_mut.insert(preview.clone());
+            c_mut.insert(*preview);
         }
     }
     if let Ok(mut parent_dependents) = dependents.get_mut(**new_parent) {

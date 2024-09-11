@@ -48,7 +48,7 @@ struct Creation<'w, 's> {
 }
 
 impl<'w, 's> WidgetSystem<Tile> for Creation<'w, 's> {
-    fn show(_: Tile, ui: &mut Ui, state: &mut SystemState<Self>, world: &mut World) -> () {
+    fn show(_: Tile, ui: &mut Ui, state: &mut SystemState<Self>, world: &mut World) {
         let mut params = state.get_mut(world);
         CollapsingHeader::new("Create")
             .default_open(true)
@@ -71,8 +71,7 @@ impl<'w, 's> Creation<'w, 's> {
                     let default_file = self
                         .current_workspace
                         .root
-                        .map(|e| self.default_file.get(e).ok())
-                        .flatten();
+                        .and_then(|e| self.default_file.get(e).ok());
                     if let Some(new_asset_source) = InspectAssetSourceComponent::new(
                         &self.pending_model.source,
                         &self.pending_model.recall_source,
