@@ -36,10 +36,8 @@ use librmf_site_editor::{
     interaction::CategoryVisibilityPlugin,
     log::LogHistoryPlugin,
     site::{ChangePlugin, RecallAssetSource, RecallPlugin, RecallPrimitiveShape, SiteAssets},
-    site::{CurrentEditDrawing, CurrentLevel, ToggleLiftDoorAvailability},
     site::{DeletionPlugin, FuelPlugin, ModelLoadingPlugin},
     site_asset_io::SiteAssetIoPlugin,
-    widgets::UserCameraDisplayPlugin,
     wireframe::SiteWireframePlugin,
     Autoload,
 };
@@ -147,11 +145,6 @@ impl Plugin for WorkcellEditor {
 
         app.insert_resource(DirectionalLightShadowMap { size: 2048 })
             .init_resource::<SiteAssets>()
-            // TODO(luca) remove the need to add all of these for interaction plugin to work
-            .add_plugins(UserCameraDisplayPlugin::default())
-            .init_resource::<CurrentEditDrawing>()
-            .init_resource::<CurrentLevel>()
-            .add_event::<ToggleLiftDoorAvailability>()
             .add_plugins((
                 ChangePlugin::<NameInWorkcell>::default(),
                 ChangePlugin::<NameOfWorkcell>::default(),

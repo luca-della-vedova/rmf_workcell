@@ -106,10 +106,8 @@ fn generate_workcell_entities(commands: &mut Commands, workcell: &Workcell) -> E
             .spawn(AnchorBundle::new(parented_anchor.bundle.anchor.clone()).visible(true))
             .insert(SiteID(*id))
             .insert(FrameMarker)
+            .insert(parented_anchor.bundle.name.clone())
             .id();
-        if let Some(name) = &parented_anchor.bundle.name {
-            commands.entity(e).insert(name.clone());
-        }
         let child_entities: &mut Vec<Entity> = parent_to_child_entities
             .entry(parented_anchor.parent)
             .or_default();

@@ -4,6 +4,7 @@
   "frames": {
     "1": {
       "parent": 0,
+      "name": "frame_1",
       "Pose3D": {
         "trans": [
           5.0,
@@ -27,6 +28,7 @@
     },
     "2": {
       "parent": 0,
+      "name": "frame_2",
       "Pose3D": {
         "trans": [
           0.0,
@@ -50,6 +52,7 @@
     },
     "3": {
       "parent": 1,
+      "name": "frame_3",
       "Pose3D": {
         "trans": [
           1.0,

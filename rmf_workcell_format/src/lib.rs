@@ -28,7 +28,10 @@ pub mod workcell;
 pub use workcell::*;
 
 // TODO(luca) move away from SiteID?
-pub use rmf_site_format::{Pending, PrimitiveShape, NameInSite, AssetSource, Pose, Anchor, Category, Model, ModelMarker, SiteID, Scale};
+pub use rmf_site_format::{
+    Anchor, AssetSource, Category, Model, ModelMarker, NameInSite, Pending, Pose, PrimitiveShape,
+    Scale, SiteID,
+};
 
 mod is_default;
 pub(crate) use is_default::*;
