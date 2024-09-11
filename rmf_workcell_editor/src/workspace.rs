@@ -26,7 +26,8 @@ use librmf_site_editor::site::DefaultFile;
 use rmf_workcell_format::Workcell;
 
 use librmf_site_editor::workspace::{
-    ChangeCurrentWorkspace, CreateNewWorkspace, CurrentWorkspace, FileDialogServices,
+    ChangeCurrentWorkspace, CreateNewWorkspace, CurrentWorkspace, FileDialogFilter,
+    FileDialogServices, RecallWorkspace,
 };
 
 #[derive(Clone)]
@@ -57,10 +58,6 @@ pub enum ExportFormat {
     Default,
     Urdf,
 }
-
-/// Used to keep track of visibility when switching workspace
-#[derive(Debug, Default, Resource)]
-pub struct RecallWorkspace(Option<Entity>);
 
 pub struct WorkspacePlugin;
 
@@ -183,10 +180,21 @@ impl FromWorld for WorkspaceLoadingServices {
             .pick_file_and_load
             .clone();
         // Spawn all the services
+        let loading_filters = vec![
+            FileDialogFilter {
+                name: "Workcell".into(),
+                extensions: vec!["workcell.json".into()],
+            },
+            FileDialogFilter {
+                name: "Urdf".into(),
+                extensions: vec!["urdf".into()],
+            },
+        ];
         let load_workspace_from_dialog = world.spawn_workflow(|scope, builder| {
             scope
                 .input
                 .chain(builder)
+                .map_block(move |_| loading_filters.clone())
                 .then(pick_file)
                 .map_async(|(path, data)| async move {
                     let data = WorkspaceData::new(&path, data)?;
@@ -315,11 +323,16 @@ impl FromWorld for WorkspaceSavingServices {
             .pick_file_for_saving
             .clone();
         let pick_folder = world.resource::<FileDialogServices>().pick_folder.clone();
+        let saving_filters = vec![FileDialogFilter {
+            name: "Workcell".into(),
+            extensions: vec!["workcell.json".into()],
+        }];
         // Spawn all the services
         let save_workspace_to_dialog = world.spawn_workflow(|scope, builder| {
             scope
                 .input
                 .chain(builder)
+                .map_block(move |_| saving_filters.clone())
                 .then(pick_file)
                 .map_block(|path| (path, ExportFormat::default()))
                 .then(send_file_save)

@@ -1,9 +1,8 @@
 use bevy::{log::LogPlugin, pbr::DirectionalLightShadowMap, prelude::*};
 use bevy_egui::EguiPlugin;
-use main_menu::MainMenuPlugin;
-// use warehouse_generator::WarehouseGeneratorPlugin;
 #[cfg(not(target_arch = "wasm32"))]
 use clap::Parser;
+use main_menu::MainMenuPlugin;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
@@ -25,11 +24,10 @@ use workspace::*;
 
 mod shapes;
 
-// TODO(luca) consider using children for this rather than rewriting
 pub mod view_menu;
 use view_menu::*;
 
-use librmf_site_editor::{
+pub use librmf_site_editor::{
     aabb::AabbUpdatePlugin,
     animate::AnimationPlugin,
     asset_loaders::AssetLoadersPlugin,
