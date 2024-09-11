@@ -114,25 +114,24 @@ pub struct WorkcellEditor {}
 
 impl Plugin for WorkcellEditor {
     fn build(&self, app: &mut App) {
-        // TODO(luca) clean this
-        let mut plugins = DefaultPlugins.build();
-        plugins = plugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "RMF Workcell Editor".to_owned(),
-                #[cfg(not(target_arch = "wasm32"))]
-                resolution: (1600., 900.).into(),
-                #[cfg(target_arch = "wasm32")]
-                canvas: Some(String::from("#rmf_site_editor_canvas")),
-                #[cfg(target_arch = "wasm32")]
-                fit_canvas_to_parent: true,
-                ..default()
-            }),
-            ..default()
-        });
         app.add_plugins((
             site_asset_io::SiteAssetIoPlugin,
-            plugins
+            DefaultPlugins
+                .build()
                 .disable::<LogPlugin>()
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "RMF Workcell Editor".to_owned(),
+                        #[cfg(not(target_arch = "wasm32"))]
+                        resolution: (1600., 900.).into(),
+                        #[cfg(target_arch = "wasm32")]
+                        canvas: Some(String::from("#rmf_site_editor_canvas")),
+                        #[cfg(target_arch = "wasm32")]
+                        fit_canvas_to_parent: true,
+                        ..default()
+                    }),
+                    ..default()
+                })
                 .set(ImagePlugin {
                     default_sampler: SamplerDescriptor {
                         address_mode_u: AddressMode::Repeat,

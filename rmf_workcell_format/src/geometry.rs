@@ -73,7 +73,6 @@ impl From<Geometry> for urdf_rs::Geometry {
     }
 }
 
-// TODO(luca) feature gate urdf support
 impl From<&urdf_rs::Geometry> for Geometry {
     fn from(geom: &urdf_rs::Geometry) -> Self {
         match geom {
