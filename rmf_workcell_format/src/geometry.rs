@@ -46,7 +46,7 @@ impl From<Geometry> for urdf_rs::Geometry {
                 // SAFETY: We don't need to validate the syntax of the asset
                 // path because that will be done later when we attempt to load
                 // this as an asset.
-                filename: unsafe { (&source).as_unvalidated_asset_path() },
+                filename: unsafe { source.as_unvalidated_asset_path() },
                 scale: scale.map(|v| urdf_rs::Vec3([v.x as f64, v.y as f64, v.z as f64])),
             },
             Geometry::Primitive(PrimitiveShape::Box { size: [x, y, z] }) => {
@@ -96,9 +96,7 @@ impl From<&urdf_rs::Geometry> for Geometry {
                 radius: *radius as f32,
             }),
             urdf_rs::Geometry::Mesh { filename, scale } => {
-                let scale = scale
-                    .clone()
-                    .and_then(|s| Some(Vec3::from_array(s.map(|v| v as f32))));
+                let scale = (*scale).map(|s| Vec3::from_array(s.map(|v| v as f32)));
                 // Most (all?) Urdf files use package references, we fallback to local if that is
                 // not the case
                 let source = if let Some(path) = filename.strip_prefix("package://") {

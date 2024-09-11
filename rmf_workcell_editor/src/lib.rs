@@ -149,7 +149,6 @@ impl Plugin for WorkcellEditor {
                         ..default()
                     }
                     .into(),
-                    ..default()
                 }),
         ));
 

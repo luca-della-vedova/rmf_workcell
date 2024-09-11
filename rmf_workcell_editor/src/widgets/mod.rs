@@ -45,7 +45,7 @@
 
 use crate::interaction::{Hover, PickingBlockers};
 use crate::{interaction::ObjectPlacementExt, AppState};
-use bevy::{ecs::system::SystemState, prelude::*};
+use bevy::prelude::*;
 use bevy_egui::{
     egui::{self},
     EguiContexts,
