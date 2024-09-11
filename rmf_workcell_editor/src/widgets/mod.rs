@@ -43,13 +43,13 @@
 //! [1]: crate::widgets::PanelWidget
 //! [2]: crate::widgets::show_panel_of_tiles
 
-use crate::interaction::{Hover, PickingBlockers};
-use crate::{interaction::ObjectPlacementExt, AppState};
-use bevy::prelude::*;
-use bevy_egui::{
+use crate::bevy_egui::{
     egui::{self},
     EguiContexts,
 };
+use crate::interaction::{Hover, PickingBlockers};
+use crate::{interaction::ObjectPlacementExt, AppState};
+use bevy::prelude::*;
 pub use librmf_site_editor::widgets::{
     canvas_tooltips::CanvasTooltips, console::ConsoleWidgetPlugin, menu_bar, prelude, prelude::*,
     render_panels, AssetGalleryStatus, FuelAssetBrowserPlugin, Icons, IconsPlugin, Inspect,

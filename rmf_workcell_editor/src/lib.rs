@@ -1,5 +1,4 @@
 use bevy::{log::LogPlugin, pbr::DirectionalLightShadowMap, prelude::*};
-use bevy_egui::EguiPlugin;
 #[cfg(not(target_arch = "wasm32"))]
 use clap::Parser;
 use main_menu::MainMenuPlugin;
@@ -32,6 +31,8 @@ pub use librmf_site_editor::{
     aabb::AabbUpdatePlugin,
     animate::AnimationPlugin,
     asset_loaders::AssetLoadersPlugin,
+    bevy_egui,
+    bevy_mod_raycast,
     log::LogHistoryPlugin,
     // Misc components
     site::{
@@ -173,7 +174,7 @@ impl Plugin for WorkcellEditor {
                 AssetLoadersPlugin,
                 LogHistoryPlugin,
                 AabbUpdatePlugin,
-                EguiPlugin,
+                bevy_egui::EguiPlugin,
                 KeyboardInputPlugin,
                 InteractionPlugin,
                 AnimationPlugin,

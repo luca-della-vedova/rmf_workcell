@@ -16,9 +16,9 @@
 */
 
 use super::demo_world::*;
+use crate::bevy_egui::{egui, EguiContexts};
 use crate::{AppState, Autoload, WorkspaceData, WorkspaceLoader};
 use bevy::{app::AppExit, prelude::*, window::PrimaryWindow};
-use bevy_egui::{egui, EguiContexts};
 
 fn egui_ui(
     mut egui_context: EguiContexts,

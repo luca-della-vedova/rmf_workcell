@@ -16,11 +16,11 @@
 */
 
 use crate::{
+    bevy_egui::egui::Ui,
     widgets::{prelude::*, Inspect, SelectorWidget},
     Dependents,
 };
 use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::Ui;
 use rmf_workcell_format::{FrameMarker, JointProperties};
 
 #[derive(SystemParam)]

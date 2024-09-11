@@ -17,12 +17,12 @@
 
 use crate::interaction::ObjectPlacement;
 use crate::{
+    bevy_egui::egui::{ImageButton, Ui},
     interaction::Hover,
     widgets::{prelude::*, Icons, Inspect, SelectorWidget},
     CurrentWorkspace,
 };
 use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::{ImageButton, Ui};
 use rmf_workcell_format::{FrameMarker, NameInWorkcell, NameOfWorkcell};
 
 #[derive(SystemParam)]

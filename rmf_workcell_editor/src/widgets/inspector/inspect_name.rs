@@ -16,11 +16,11 @@
 */
 
 use crate::{
+    bevy_egui::egui::Ui,
     widgets::{prelude::*, Inspect},
     Change,
 };
 use bevy::prelude::*;
-use bevy_egui::egui::Ui;
 use rmf_workcell_format::{NameInWorkcell, NameOfWorkcell};
 
 #[derive(SystemParam)]
