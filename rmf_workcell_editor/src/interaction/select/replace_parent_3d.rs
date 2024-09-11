@@ -15,12 +15,12 @@
  *
 */
 
+use crate::bevy_mod_raycast::deferred::RaycastSource;
 use crate::interaction::PlaceObject3dFilter;
 use crate::interaction::*;
 use crate::{keyboard::KeyboardServices, widgets::CanvasTooltips, Dependents};
 use bevy::prelude::{Input as UserInput, *};
 use bevy_impulse::*;
-use bevy_mod_raycast::deferred::RaycastSource;
 use rmf_workcell_format::{Anchor, FrameMarker, Pose};
 use std::borrow::Cow;
 

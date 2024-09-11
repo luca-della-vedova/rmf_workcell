@@ -17,13 +17,13 @@
 
 use crate::interaction::{ObjectPlacement, PlaceableObject};
 use crate::{
+    bevy_egui::egui::{CollapsingHeader, Ui},
     widgets::inspector::{InspectAssetSourceComponent, InspectScaleComponent},
     widgets::prelude::*,
     widgets::AssetGalleryStatus,
     CurrentWorkspace, DefaultFile, Recall, RecallAssetSource,
 };
 use bevy::{ecs::system::SystemParam, prelude::*};
-use bevy_egui::egui::{CollapsingHeader, Ui};
 
 use rmf_workcell_format::{AssetSource, Model, Scale};
 

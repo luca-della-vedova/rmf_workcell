@@ -19,12 +19,12 @@ use crate::{interaction::Selection, CreateNewWorkspace, Delete};
 
 pub use librmf_site_editor::keyboard::{keyboard_just_pressed_stream, KeyboardServices};
 
+use crate::bevy_egui::EguiContexts;
 use crate::workspace::{WorkspaceLoader, WorkspaceSaver};
 use bevy::{
     prelude::{Input as UserInput, *},
     window::PrimaryWindow,
 };
-use bevy_egui::EguiContexts;
 use bevy_impulse::*;
 
 pub struct KeyboardInputPlugin;
