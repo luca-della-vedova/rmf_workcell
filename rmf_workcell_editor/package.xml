@@ -1,0 +1,16 @@
+<package format="3">
+  <name>rmf_workcell_editor</name>
+  <version>0.0.1</version>
+  <description>An editor and visualizer for workcells</description>
+  <maintainer email="lucadv@intrinsic.ai">Luca Della Vedova</maintainer>
+  <license>Apache License 2.0</license>
+
+  <depend>rmf_workcell_format</depend>
+  <depend>gtk3</depend>
+  <depend>libudev-dev</depend>
+  <depend>libasound2-dev</depend>
+
+  <export>
+    <build_type>ament_cargo</build_type>
+  </export>
+</package>
