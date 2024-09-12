@@ -97,19 +97,18 @@ impl<'w, 's> InspectJointCreator<'w, 's> {
             return;
         };
         // Allow creating a joint only if this frame has another frame as a parent
-        if self.frame_parents.get(parent.get()).is_ok() {
-            if ui
+        if self.frame_parents.get(parent.get()).is_ok()
+            && ui
                 .button("Create joint")
                 .on_hover_text(
                     "Create a fixed joint and place it between the parent frame and this frame",
                 )
                 .clicked()
-            {
-                self.create_joint.send(CreateJoint {
-                    parent: parent.get(),
-                    child: id,
-                });
-            }
+        {
+            self.create_joint.send(CreateJoint {
+                parent: parent.get(),
+                child: id,
+            });
         }
     }
 }
