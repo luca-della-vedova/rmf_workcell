@@ -27,7 +27,9 @@ use bevy::{
     prelude::{Input as UserInput, *},
 };
 use bevy_impulse::*;
-use rmf_workcell_format::{Anchor, Category, FrameMarker, Model, NameInWorkcell, Pending, SiteID};
+use rmf_workcell_format::{
+    Anchor, Angle, Category, FrameMarker, Model, NameInWorkcell, Pending, Pose, Rotation, SiteID,
+};
 use std::borrow::Cow;
 
 pub const PLACE_OBJECT_3D_MODE_LABEL: &str = "place_object_3d";
@@ -453,7 +455,12 @@ pub fn on_placement_chosen_3d(
     let parent_tf = global_tfs.get(parent).or_broken_query()?;
     let inv_tf = parent_tf.affine().inverse();
     let placement_tf = placement.compute_affine();
-    let pose = Transform::from_matrix((inv_tf * placement_tf).into()).into();
+    let tf = Transform::from_matrix((inv_tf * placement_tf).into());
+    let rot = tf.rotation.to_euler(EulerRot::ZYX);
+    let pose = Pose {
+        trans: tf.translation.into(),
+        rot: Rotation::EulerExtrinsicXYZ([Angle::Rad(rot.0), Angle::Rad(rot.1), Angle::Rad(rot.2)]),
+    };
 
     let flatten_models = flatten_loaded_model_hierarchy.into_blocking_callback();
     let add_model_components = |object: Model, mut cmd: EntityCommands| {

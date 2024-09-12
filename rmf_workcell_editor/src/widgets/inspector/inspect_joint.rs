@@ -76,7 +76,6 @@ impl<'w, 's> InspectJoint<'w, 's> {
 #[derive(SystemParam)]
 pub struct InspectJointCreator<'w, 's> {
     frame_parents: Query<'w, 's, &'static Parent, With<FrameMarker>>,
-    joints: Query<'w, 's, (), With<JointProperties>>,
     create_joint: EventWriter<'w, CreateJoint>,
 }
 
@@ -97,6 +96,7 @@ impl<'w, 's> InspectJointCreator<'w, 's> {
         let Ok(parent) = self.frame_parents.get(id) else {
             return;
         };
+        // Allow creating a joint only if this frame has another frame as a parent
         if self.frame_parents.get(parent.get()).is_ok() {
             if ui
                 .button("Create joint")
