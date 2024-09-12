@@ -18,7 +18,7 @@
 #[cfg(feature = "bevy")]
 use bevy::ecs::system::EntityCommands;
 #[cfg(feature = "bevy")]
-use bevy::prelude::{Bundle, Component, Entity, Event, SpatialBundle};
+use bevy::prelude::{Bundle, Component, SpatialBundle};
 
 use crate::{Category, NameInWorkcell};
 
@@ -183,13 +183,4 @@ impl Joint {
             self.properties.clone(),
         ));
     }
-}
-
-/// Event used  to request the creation of a joint between a parent and a child frame
-#[cfg(feature = "bevy")]
-#[derive(Event)]
-pub struct CreateJoint {
-    pub parent: Entity,
-    pub child: Entity,
-    // TODO(luca) Add different properties here such as JointType
 }

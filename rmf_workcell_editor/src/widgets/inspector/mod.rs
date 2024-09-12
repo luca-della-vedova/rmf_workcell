@@ -43,6 +43,7 @@ impl Plugin for StandardInspectorPlugin {
             .add_plugins((
                 InspectionPlugin::<InspectName>::new(),
                 InspectionPlugin::<InspectAnchor>::new(),
+                InspectionPlugin::<InspectJointCreator>::new(),
                 InspectionPlugin::<InspectAnchorDependents>::new(),
                 InspectionPlugin::<InspectPose>::new(),
                 InspectionPlugin::<InspectScale>::new(),

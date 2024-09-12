@@ -46,7 +46,6 @@ pub use librmf_site_editor::site::{
     handle_new_primitive_shapes, update_anchor_transforms, update_model_scales,
     update_transforms_for_changed_poses,
 };
-use rmf_workcell_format::CreateJoint;
 
 #[derive(Default)]
 pub struct WorkcellEditorPlugin;

@@ -18,7 +18,7 @@
 use crate::{
     bevy_egui::egui::Ui,
     widgets::{prelude::*, Inspect, SelectorWidget},
-    Dependents,
+    CreateJoint, Dependents,
 };
 use bevy::{ecs::system::SystemParam, prelude::*};
 use rmf_workcell_format::{FrameMarker, JointProperties};
@@ -70,5 +70,46 @@ impl<'w, 's> InspectJoint<'w, 's> {
             ui.label(joint_properties.label());
         });
         // TODO(luca) add joint limit and joint axis inspectors
+    }
+}
+
+#[derive(SystemParam)]
+pub struct InspectJointCreator<'w, 's> {
+    frame_parents: Query<'w, 's, &'static Parent, With<FrameMarker>>,
+    joints: Query<'w, 's, (), With<JointProperties>>,
+    create_joint: EventWriter<'w, CreateJoint>,
+}
+
+impl<'w, 's> WidgetSystem<Inspect> for InspectJointCreator<'w, 's> {
+    fn show(
+        Inspect { selection, .. }: Inspect,
+        ui: &mut Ui,
+        state: &mut SystemState<Self>,
+        world: &mut World,
+    ) {
+        let mut params = state.get_mut(world);
+        params.show_widget(selection, ui);
+    }
+}
+
+impl<'w, 's> InspectJointCreator<'w, 's> {
+    pub fn show_widget(&mut self, id: Entity, ui: &mut Ui) {
+        let Ok(parent) = self.frame_parents.get(id) else {
+            return;
+        };
+        if self.frame_parents.get(parent.get()).is_ok() {
+            if ui
+                .button("Create joint")
+                .on_hover_text(
+                    "Create a fixed joint and place it between the parent frame and this frame",
+                )
+                .clicked()
+            {
+                self.create_joint.send(CreateJoint {
+                    parent: parent.get(),
+                    child: id,
+                });
+            }
+        }
     }
 }
