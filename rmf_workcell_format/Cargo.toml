@@ -13,7 +13,7 @@ serde_json = "*"
 thiserror = "*"
 glam = { version = "0.24", features = ["serde"] }
 bevy = { version = "0.12", optional = true }
-rmf_site_format = { git = "https://github.com/open-rmf/rmf_site", branch = "luca/split_workcell_editor_2"}
+rmf_site_format = { git = "https://github.com/open-rmf/rmf_site", branch = "luca/split_workcell_editor_2", features = ["urdf"]}
 yaserde = "0.7"
 urdf-rs = "0.7.3"
 
