@@ -36,8 +36,8 @@ pub use librmf_site_editor::{
     log::LogHistoryPlugin,
     // Misc components
     site::{
-        AnchorBundle, CollisionMeshMarker, DefaultFile, Delete, Dependents, ModelLoadingRequest,
-        ModelSpawningExt, PreventDeletion, VisualMeshMarker,
+        AnchorBundle, CollisionMeshMarker, DefaultFile, Delete, Dependents, ModelLoader,
+        ModelLoadingResult, PreventDeletion, VisualMeshMarker,
     },
     site::{
         Change, ChangePlugin, Recall, RecallAssetSource, RecallPlugin, RecallPrimitiveShape,

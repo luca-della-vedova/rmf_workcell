@@ -20,7 +20,7 @@ use std::path::PathBuf;
 
 use crate::workcell::ChangeCurrentWorkcell;
 use crate::{
-    AnchorBundle, CollisionMeshMarker, DefaultFile, Dependents, ModelSpawningExt, PreventDeletion,
+    AnchorBundle, CollisionMeshMarker, DefaultFile, Dependents, ModelLoader, PreventDeletion,
     VisualMeshMarker,
 };
 use bevy::prelude::*;
@@ -41,7 +41,11 @@ pub struct LoadWorkcell {
     pub default_file: Option<PathBuf>,
 }
 
-fn generate_workcell_entities(commands: &mut Commands, workcell: &Workcell) -> Entity {
+fn generate_workcell_entities(
+    commands: &mut Commands,
+    workcell: &Workcell,
+    model_loader: &mut ModelLoader,
+) -> Entity {
     // Create hashmap of ids to entity to correctly generate hierarchy
     let mut id_to_entity = HashMap::new();
     // Hashmap of parent id to list of its children entities
@@ -75,7 +79,7 @@ fn generate_workcell_entities(commands: &mut Commands, workcell: &Workcell) -> E
                         Scale(scale.unwrap_or(Vec3::ONE)),
                         ModelMarker,
                     ));
-                    commands.spawn_model((e, source.clone()).into());
+                    model_loader.update_asset_source(e, source.clone());
                 }
             };
             commands.entity(e).insert(SiteID(id));
@@ -155,10 +159,11 @@ pub fn load_workcell(
     mut commands: Commands,
     mut load_workcells: EventReader<LoadWorkcell>,
     mut change_current_workcell: EventWriter<ChangeCurrentWorkcell>,
+    mut model_loader: ModelLoader,
 ) {
     for cmd in load_workcells.read() {
         info!("Loading workcell");
-        let root = generate_workcell_entities(&mut commands, &cmd.workcell);
+        let root = generate_workcell_entities(&mut commands, &cmd.workcell, &mut model_loader);
         if let Some(path) = &cmd.default_file {
             commands.entity(root).insert(DefaultFile(path.clone()));
         }
