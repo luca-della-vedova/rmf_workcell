@@ -55,6 +55,8 @@ pub use librmf_site_editor::{
     Autoload,
 };
 
+pub use bevy_impulse;
+
 use crate::interaction::InteractionPlugin;
 
 use bevy::render::{
