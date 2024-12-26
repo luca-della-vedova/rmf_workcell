@@ -1,1 +1,7 @@
-target/**
+target
+web/librmf_workcell_editor.d.ts
+web/librmf_workcell_editor.js
+web/librmf_workcell_editor_bg.wasm
+web/librmf_workcell_editor_bg_optimized.wasm
+web/librmf_workcell_editor_bg.wasm.d.ts
+/test_output/
