@@ -442,7 +442,7 @@ mod tests {
         frames
             .iter()
             .find(|(_, parented_frame)| {
-                parented_frame.bundle.name == Some(NameInWorkcell(name.to_string()))
+                parented_frame.bundle.name == NameInWorkcell(name.to_string())
             })
             .map(|(id, f)| (*id, f.clone()))
     }
