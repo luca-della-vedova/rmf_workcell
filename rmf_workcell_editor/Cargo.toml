@@ -20,7 +20,7 @@ wasm-bindgen = "0.2.87"
 bevy = { version = "0.12", features = ["pnm", "jpeg", "tga", "dynamic_linking"] }
 thiserror = "*"
 rmf_workcell_format = { path = "../rmf_workcell_format", features = ["bevy_support"] }
-rmf_site_editor = { git = "https://github.com/open-rmf/rmf_site", branch = "luca/split_workcell_editor_2"}
+rmf_site_editor = { git = "https://github.com/open-rmf/rmf_site", rev = "fe86373"}
 urdf-rs = "0.7"
 yaserde = "0.7"
 tera = "1.19.1"
