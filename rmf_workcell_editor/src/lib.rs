@@ -128,7 +128,7 @@ impl Plugin for WorkcellEditor {
                         #[cfg(not(target_arch = "wasm32"))]
                         resolution: (1600., 900.).into(),
                         #[cfg(target_arch = "wasm32")]
-                        canvas: Some(String::from("#rmf_site_editor_canvas")),
+                        canvas: Some(String::from("#rmf_workcell_editor_canvas")),
                         #[cfg(target_arch = "wasm32")]
                         fit_canvas_to_parent: true,
                         ..default()

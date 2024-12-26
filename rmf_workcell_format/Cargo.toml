@@ -13,7 +13,8 @@ serde_json = "*"
 thiserror = "*"
 glam = { version = "0.24", features = ["serde"] }
 bevy = { version = "0.12", optional = true }
-rmf_site_format = { git = "https://github.com/open-rmf/rmf_site", rev = "fe86373"}
+# rmf_site_format = { git = "https://github.com/open-rmf/rmf_site", rev = "fe86373"}
+rmf_site_format = { git = "https://github.com/open-rmf/rmf_site", branch = "luca/private_run_js"}
 yaserde = "0.7"
 urdf-rs = "0.7.3"
 
