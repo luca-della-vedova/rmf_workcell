@@ -1,0 +1,40 @@
+name: ci_web
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: rust-wasm-target
+      run: |
+        rustup target add wasm32-unknown-unknown
+
+    - name: apt-deps
+      run: |
+        sudo apt-get update
+        sudo apt-get install libasound2-dev libudev-dev binaryen
+
+    - name: cargo-deps
+      run: |
+        cargo install -f wasm-bindgen-cli --version 0.2.93
+
+    - uses: actions/checkout@v3
+
+    - name: build rmf_workcell_format
+      run: |
+        cd rmf_workcell_format
+        cargo build
+
+    - name: build rmf_workcell_editor
+      run: scripts/build-web.sh

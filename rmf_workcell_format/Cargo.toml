@@ -1,0 +1,25 @@
+[package]
+name = "rmf_workcell_format"
+version = "0.0.1"
+edition = "2021"
+authors = ["Luca Della Vedova <lucadv@intrinsic.ai>"]
+
+[lib]
+crate-type = ["rlib"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "*"
+thiserror = "*"
+glam = { version = "0.24", features = ["serde"] }
+bevy = { version = "0.12", optional = true }
+# rmf_site_format = { git = "https://github.com/open-rmf/rmf_site", rev = "fe86373"}
+rmf_site_format = { git = "https://github.com/open-rmf/rmf_site", tag = "v0.0.1"}
+yaserde = "0.7"
+urdf-rs = "0.7.3"
+
+[dev-dependencies]
+float_eq = "1.0"
+
+[features]
+bevy_support = ["rmf_site_format/bevy", "bevy"]
